@@ -1,0 +1,15 @@
+{
+  "name": "nbb-anime-statistics",
+  "version": "0.0.1",
+  "description": "Anime Statistics per Season",
+  "main": "index.js",
+  "scripts": {},
+  "author": "Luís Nabais <dextro@nonsensebb.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.3.5",
+    "fetch": "^1.0.1",
+    "node-fetch": "^1.5.2",
+    "xml2js": "^0.4.16"
+  }
+}
