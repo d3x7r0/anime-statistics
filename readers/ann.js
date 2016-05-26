@@ -50,13 +50,16 @@ function cleanupEntry(data) {
         date = DATE_REGEX.exec(res["Vintage"]);
 
         if (date) {
-            res["year"] = date[1];
-            res["month"] = date[2];
+            res["year"] = parseInt(date[1], 10);
+            res["month"] = parseInt(date[2], 10);
         }
     }
 
     res["Genres"] = getXMLValue(info, "Genres");
     res["Themes"] = getXMLValue(info, "Themes");
+
+    res["Episodes"] = getXMLValue(info, "Number of episodes");
+    res["Episodes"] = res["Episodes"] && parseInt(res["Episodes"], 10);
 
     return res;
 }

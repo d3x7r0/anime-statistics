@@ -1,6 +1,9 @@
-var Utils = require('./utils'),
-    Writer = require("./writers/csv"),
-    Reader = require("./readers/ann");
+var Utils = require('./utils');
+
+// var Writer = require("./writers/csv");
+var Writer = require("./writers/couch");
+
+var Reader = require("./readers/ann");
 
 const TAG = "CORE";
 
