@@ -105,18 +105,22 @@ function filterLines(entry) {
     return entry["year"] && (entry["Genres"].length > 0 || entry["Themes"] > 0);
 }
 
+function saveToCSV(data) {
+    return fs.appendFile(
+        OUT_FILE,
+        data.map(printCSVLine).join("\n")
+    );
+}
+
 function processPage(idx) {
     var continueProcess = false;
 
     return getPage(idx)
         .then(data => {
             continueProcess = data.length == PAGE_SIZE;
-
-            return data
-                .filter(filterLines)
-                .map(printCSVLine);
+            return data.filter(filterLines);
         })
-        .then(data => fs.appendFile(OUT_FILE, data.join("\n")))
+        .then(saveToCSV)
         .then(delay(1000))
         .then(() => continueProcess && processPage(idx + 1));
 }
