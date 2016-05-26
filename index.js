@@ -1,13 +1,14 @@
 var Utils = require('./utils');
 
-// var Writer = require("./writers/csv");
-var Writer = require("./writers/couch");
+var Writer = require("./writers/csv");
+// var Writer = require("./writers/couch");
 
 var Reader = require("./readers/ann");
 
 const TAG = "CORE";
 
 var STATS = {
+    start: +new Date(),
     processed: 0,
     discarded: 0,
     stored: 0
@@ -52,14 +53,22 @@ function processPage(idx) {
         .then(() => continueProcess && processPage(idx + 1));
 }
 
+function collectStats() {
+    STATS.finish = +new Date();
+    STATS.duration = STATS.finish - STATS.start;
+
+    return STATS;
+}
+
 // Run
 Writer.prepare()
     .then(() => processPage())
+    .then(collectStats)
+    .then(Writer.finish)
     .then(
         () => {
             console.log(`[${TAG}] Finished`);
-            console.log(`[${TAG}] Processed: ${STATS.processed}`);
-            console.log(`[${TAG}] Discarded: ${STATS.discarded}`);
+            console.log(`[${TAG}] Stats:\n${ JSON.stringify(STATS, null, 2)}`);
         },
         console.error.bind(console)
     );

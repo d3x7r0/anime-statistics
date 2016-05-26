@@ -13,6 +13,7 @@ const destroy = Bluebird.promisify(nano.db.destroy);
 const create = Bluebird.promisify(nano.db.create);
 
 var db,
+    insert,
     bulkInsert;
 
 function prepare() {
@@ -22,6 +23,7 @@ function prepare() {
         .then(() => create(STORE_NAME), () => create(STORE_NAME))
         .then(() => {
             db = nano.use(STORE_NAME);
+            insert = Bluebird.promisify(db.insert);
             bulkInsert = Bluebird.promisify(db.bulk);
         });
 }
@@ -46,7 +48,16 @@ function save(data) {
     });
 }
 
+function finish(stats) {
+    var data = Object.assign({}, stats, {
+        _id: "STATS"
+    });
+
+    return insert(data);
+}
+
 module.exports = {
     prepare: prepare,
-    save: save
+    save: save,
+    finish: finish
 };
