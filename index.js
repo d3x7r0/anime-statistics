@@ -9,6 +9,7 @@ var fetch = require("node-fetch"),
 Bluebird.promisifyAll(fs);
 
 const LIST_URL = "http://www.animenewsnetwork.com/encyclopedia/reports.xml?id=155&nlist={limit}&nskip={offset}&type=anime";
+const SINGLE_URL = "http://cdn.animenewsnetwork.com/encyclopedia/api.xml?";
 const OUT_FILE = "out.csv";
 const PAGE_SIZE = 50;
 const HEADERS = ["Name", "Type", "Year", "Month", "Genres", "Themes"];
@@ -25,7 +26,7 @@ function getPage(i) {
             .join("&")
         )
         .then(delay(1000))
-        .then(ids => fetchXML(`http://cdn.animenewsnetwork.com/encyclopedia/api.xml?${ids}`))
+        .then(ids => fetchXML(SINGLE_URL + ids))
         .then(data => data["ann"]["anime"].map(cleanupEntry));
 }
 
