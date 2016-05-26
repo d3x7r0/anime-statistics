@@ -15,8 +15,6 @@ const PAGE_SIZE = 50;
 const parseXMLString = Bluebird.promisify(xml2js.parseString);
 
 function getPage(i) {
-    i = i || 0;
-
     console.log(`[${TAG}] Fetching page ${i}`);
 
     return fetchXML(LIST_URL.replace("{limit}", "" + PAGE_SIZE).replace("{offset}", "" + (i * PAGE_SIZE)))

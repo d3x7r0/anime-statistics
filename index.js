@@ -25,6 +25,8 @@ function filterLines(data) {
 function processPage(idx) {
     var continueProcess = false;
 
+    idx = idx || 0;
+
     return Reader.getPage(idx)
         .then(data => {
             continueProcess = data.length == Reader.PAGE_SIZE;
