@@ -7,6 +7,12 @@ var Reader = require("./readers/ann");
 
 const TAG = "CORE";
 
+var STATS = {
+    processed: 0,
+    discarded: 0,
+    stored: 0
+};
+
 function filterLine(entry) {
     return entry["year"] && (entry["Genres"].length > 0 || entry["Themes"] > 0);
 }
@@ -14,9 +20,14 @@ function filterLine(entry) {
 function filterLines(data) {
     var count = data.length;
 
+    STATS.processed += count;
+
     data = data.filter(filterLine);
 
     count = count - data.length;
+
+    STATS.discarded += count;
+    STATS.stored += data.length;
 
     if (count > 0) {
         console.log(`[${TAG}] Discarded ${count} lines`);
@@ -44,4 +55,11 @@ function processPage(idx) {
 // Run
 Writer.prepare()
     .then(() => processPage())
-    .then(() => console.log("Done"), console.error.bind(console));
+    .then(
+        () => {
+            console.log(`[${TAG}] Finished`);
+            console.log(`[${TAG}] Processed: ${STATS.processed}`);
+            console.log(`[${TAG}] Discarded: ${STATS.discarded}`);
+        },
+        console.error.bind(console)
+    );
