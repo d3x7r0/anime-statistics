@@ -8,12 +8,15 @@
     var LABELS = [];
     var TOTALS = {};
 
+    var EPISODE_TOTALS = {};
+
     for (var i = START_YEAR; i <= END_YEAR; i++) {
         LABELS.push(i);
     }
 
     var $absolute = document.getElementById("absolute"),
-        $relative = document.getElementById("relative");
+        $relative = document.getElementById("relative"),
+        $episodes = document.getElementById("episodes");
 
     var $genres = document.getElementById("genres"),
         $themes = document.getElementById("themes");
@@ -33,7 +36,7 @@
 
             var $canvas = this.querySelectorAll(".js-output")[0];
 
-            if (!$canvas && !charts["absolute"] || !charts["relative"]) {
+            if (!$canvas) {
                 e.preventDefault();
                 return false;
             }
@@ -54,6 +57,16 @@
 
             drawAbsoluteChart(ds);
             drawRelativeChart(ds);
+        });
+
+        Promise.all(
+            values.map(getEpisodeData)
+        ).then(ds => {
+            if (console && console.debug) {
+                console.debug(ds);
+            }
+
+            drawEpisodesChart(ds);
         });
     }
 
@@ -81,6 +94,24 @@
                 backgroundColor: entry.color,
                 borderColor: lightenDarkenColor(entry.color, -35)
             }));
+    }
+
+    function getEpisodeData(entry) {
+        return fetch(`${DATABASE_LOCATION}/_design/aggregated/_view/episodesByKey?group=true&startkey=["${entry.key}"]&endkey=["${entry.key}", {}]`)
+            .then(res => res.json())
+            .then(processEntries)
+            .then(calculateAverages)
+            .then(data => ({
+                label: entry.key,
+                data: data,
+                fill: false,
+                backgroundColor: entry.color,
+                borderColor: lightenDarkenColor(entry.color, -35)
+            }));
+    }
+
+    function calculateAverages(data) {
+        return data.map(value => Math.round(value.sum / value.count || 0));
     }
 
     // src: https://css-tricks.com/snippets/javascript/lighten-darken-color/
@@ -130,7 +161,8 @@
 
     var charts = {
         "absolute": null,
-        "relative": null
+        "relative": null,
+        "episodes": null
     };
 
     function drawAbsoluteChart(datasets) {
@@ -157,6 +189,32 @@
         }].concat(ds || []);
 
         charts["absolute"] = drawChart($absolute, ds, yAxis);
+    }
+
+    function drawEpisodesChart(datasets) {
+        if (charts["episodes"]) {
+            charts["episodes"].destroy();
+        }
+
+        var ds = datasets;
+
+        var yAxis = {
+            scaleLabel: {
+                display: true,
+                labelString: "avg. episode count"
+            },
+            ticks: {
+                beginAtZero: true
+            }
+        };
+
+        ds = [{
+            label: "total",
+            data: Object.keys(EPISODE_TOTALS).map(y => EPISODE_TOTALS[y]),
+            fill: false
+        }].concat(ds || []);
+
+        charts["episodes"] = drawChart($episodes, ds, yAxis);
     }
 
     function drawRelativeChart(datasets) {
@@ -263,6 +321,20 @@
             });
     }
 
+    function fetchEpisodeTotals() {
+        return fetch(`${DATABASE_LOCATION}/_design/aggregated/_view/episodes?group=true&startkey=${START_YEAR}&endkey=${END_YEAR}`)
+            .then(res => res.json())
+            .then(data => {
+                EPISODE_TOTALS = data.rows.reduce(function (memo, entry) {
+                    var value = entry.value.sum / entry.value.count;
+                    memo[entry.key] = Math.round(value);
+                    return memo;
+                }, {});
+
+                console.debug(EPISODE_TOTALS);
+            });
+    }
+
     function enableForm() {
         $genres.removeAttribute("disabled");
         $themes.removeAttribute("disabled");
@@ -271,6 +343,7 @@
 
     Promise.all([
         fetchTotals(),
+        fetchEpisodeTotals(),
         populateAll("genres", $genres),
         populateAll("themes", $themes)
     ]).then(enableForm);
