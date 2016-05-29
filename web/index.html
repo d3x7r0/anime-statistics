@@ -19,25 +19,25 @@
     </div>
 
     <div class="charts pure-g">
-        <div class="chart pure-u-1 pure-u-lg-1-2" id="relative">
+        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="relative">
             <h2>% of shows per year</h2>
             <canvas class="js-output" width="800" height="600"></canvas>
-            <a href="#" class="pure-button pure-button-primary js-download" download="canvas.png">Save to PNG</a>
+            <a href="#" class="pure-button pure-button-primary js-download pure-button-disabled" download="canvas.png">Save to PNG</a>
         </div>
-        <div class="chart pure-u-1 pure-u-lg-1-2" id="relative-cumulative">
+        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="relative-cumulative">
             <h2>% of shows per year (cumulative)</h2>
             <canvas class="js-output" width="800" height="600"></canvas>
-            <a href="#" class="pure-button pure-button-primary js-download" download="canvas.png">Save to PNG</a>
+            <a href="#" class="pure-button pure-button-primary js-download pure-button-disabled" download="canvas.png">Save to PNG</a>
         </div>
-        <div class="chart pure-u-1 pure-u-lg-1-2" id="absolute">
+        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="absolute">
             <h2># of shows per year</h2>
             <canvas class="js-output" width="800" height="600"></canvas>
-            <a href="#" class="pure-button pure-button-primary js-download" download="canvas.png">Save to PNG</a>
+            <a href="#" class="pure-button pure-button-primary js-download pure-button-disabled" download="canvas.png">Save to PNG</a>
         </div>
-        <div class="chart pure-u-1 pure-u-lg-1-2" id="episodes">
+        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="episodes">
             <h2>Avg. # of Eps per year</h2>
             <canvas class="js-output" width="800" height="600"></canvas>
-            <a href="#" class="pure-button pure-button-primary js-download" download="canvas.png">Save to PNG</a>
+            <a href="#" class="pure-button pure-button-primary js-download pure-button-disabled" download="canvas.png">Save to PNG</a>
         </div>
     </div>
 
@@ -63,6 +63,7 @@
     <script src="../node_modules/chart.js/dist/Chart.bundle.js"></script>
     <script src="../node_modules/bluebird/js/browser/bluebird.js"></script>
     <script src="../node_modules/randomcolor/randomColor.js"></script>
+    <script src="js/common.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

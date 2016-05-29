@@ -1,16 +1,10 @@
-/* globals Chart:false, randomColor:false */
+/* globals Chart:false, randomColor:false, NBB: false */
 (function () {
-    const DATABASE_LOCATION = "http://127.0.0.1:5984/ann/";
-    const START_YEAR = 1975;
-    const END_YEAR = 2015;
     const MIN_COUNT = 25;
 
     var LABELS = [];
-    var TOTALS = {};
 
-    var EPISODE_TOTALS = {};
-
-    for (var i = START_YEAR; i <= END_YEAR; i++) {
+    for (var i = NBB.Common.START_YEAR; i <= NBB.Common.END_YEAR; i++) {
         LABELS.push(i);
     }
 
@@ -25,27 +19,8 @@
     $genres.addEventListener("change", onDatasetChange);
     $themes.addEventListener("change", onDatasetChange);
 
-    $absolute.addEventListener("click", onDownloadClick);
-    $relative.addEventListener("click", onDownloadClick);
-    $relativeCumulative.addEventListener("click", onDownloadClick);
-    $episodes.addEventListener("click", onDownloadClick);
-
     function onDatasetChange() {
         updateCharts();
-    }
-
-    function onDownloadClick(e) {
-        if (e.target && e.target.matches(".js-download")) {
-
-            var $canvas = this.querySelectorAll(".js-output")[0];
-
-            if (!$canvas) {
-                e.preventDefault();
-                return false;
-            }
-
-            e.target.href = $canvas.toDataURL("image/png");
-        }
     }
 
     function updateCharts() {
@@ -88,21 +63,19 @@
     }
 
     function getData(entry) {
-        return fetch(`${DATABASE_LOCATION}/_design/aggregated/_view/byKey?group=true&startkey=["${entry.key}"]&endkey=["${entry.key}", {}]`)
-            .then(res => res.json())
+        return NBB.Common.fetchDB(`_design/aggregated/_view/byKey?group=true&startkey=["${entry.key}"]&endkey=["${entry.key}", {}]`)
             .then(processEntries)
             .then(data => ({
                 label: entry.key,
                 data: data,
                 fill: false,
                 backgroundColor: entry.color,
-                borderColor: lightenDarkenColor(entry.color, -35)
+                borderColor: NBB.Common.lightenDarkenColor(entry.color, -35)
             }));
     }
 
     function getEpisodeData(entry) {
-        return fetch(`${DATABASE_LOCATION}/_design/aggregated/_view/episodesByKey?group=true&startkey=["${entry.key}"]&endkey=["${entry.key}", {}]`)
-            .then(res => res.json())
+        return NBB.Common.fetchDB(`_design/aggregated/_view/episodesByKey?group=true&startkey=["${entry.key}"]&endkey=["${entry.key}", {}]`)
             .then(processEntries)
             .then(calculateAverages)
             .then(data => ({
@@ -110,43 +83,12 @@
                 data: data,
                 fill: false,
                 backgroundColor: entry.color,
-                borderColor: lightenDarkenColor(entry.color, -35)
+                borderColor: NBB.Common.lightenDarkenColor(entry.color, -35)
             }));
     }
 
     function calculateAverages(data) {
         return data.map(value => Math.round(value.sum / value.count || 0));
-    }
-
-    // src: https://css-tricks.com/snippets/javascript/lighten-darken-color/
-    function lightenDarkenColor(col, amt) {
-
-        var usePound = false;
-
-        if (col[0] == "#") {
-            col = col.slice(1);
-            usePound = true;
-        }
-
-        var num = parseInt(col, 16);
-
-        var r = (num >> 16) + amt;
-
-        if (r > 255) r = 255;
-        else if (r < 0) r = 0;
-
-        var b = ((num >> 8) & 0x00FF) + amt;
-
-        if (b > 255) b = 255;
-        else if (b < 0) b = 0;
-
-        var g = (num & 0x0000FF) + amt;
-
-        if (g > 255) g = 255;
-        else if (g < 0) g = 0;
-
-        return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
-
     }
 
     function processEntries(entries) {
@@ -187,9 +129,11 @@
             }
         };
 
+        var totals = NBB.Common.getTotals();
+
         ds = [{
             label: "total",
-            data: Object.keys(TOTALS).map(y => TOTALS[y]),
+            data: Object.keys(totals).map(y => totals[y]),
             fill: false
         }].concat(ds || []);
 
@@ -213,9 +157,11 @@
             }
         };
 
+        var totals = NBB.Common.getEpisodeTotals();
+
         ds = [{
             label: "overall",
-            data: Object.keys(EPISODE_TOTALS).map(y => EPISODE_TOTALS[y]),
+            data: Object.keys(totals).map(y => totals[y]),
             fill: false
         }].concat(ds || []);
 
@@ -239,13 +185,15 @@
             }
         };
 
+        var totals = NBB.Common.getTotals();
+
         var ds = datasets.map(ds => {
-            var years = Object.keys(TOTALS);
+            var years = Object.keys(totals);
             var res = Object.assign({}, ds);
 
             res.data = res.data.map((value, idx) => {
                 var year = years[idx];
-                var v = (value / TOTALS[year] * 100);
+                var v = (value / totals[year] * 100);
                 v = v.toFixed(2);
                 return parseInt(v, 10);
             });
@@ -272,15 +220,17 @@
             }
         };
 
+        var totals = NBB.Common.getTotals();
+
         var ds = datasets.map(ds => {
-            var years = Object.keys(TOTALS);
+            var years = Object.keys(totals);
             var res = Object.assign({}, ds);
 
             res.fill = true;
 
             res.data = res.data.map((value, idx) => {
                 var year = years[idx];
-                var v = (value / TOTALS[year] * 100);
+                var v = (value / totals[year] * 100);
                 v = v.toFixed(2);
                 return parseInt(v, 10);
             });
@@ -327,8 +277,7 @@
     }
 
     function populateAll(type, $target) {
-        return fetch(`${DATABASE_LOCATION}/_design/${type}/_view/all?group=true`)
-            .then(res => res.json())
+        return NBB.Common.fetchDB(`_design/${type}/_view/all?group=true`)
             .then(function (data) {
                 var entries = data.rows.filter(d => d.value >= MIN_COUNT);
 
@@ -347,46 +296,18 @@
         return `<label for="entry_${entry.key}" class="pure-checkbox"><input type="checkbox" value="${entry.key}" data-color="${entry.color}" id="entry_${entry.key}" />${entry.key}</label>`;
     }
 
-    function fetchTotals() {
-        return fetch(`${DATABASE_LOCATION}/_design/aggregated/_view/all?group=true&startkey=${START_YEAR}&endkey=${END_YEAR}`)
-            .then(res => res.json())
-            .then(data => {
-                TOTALS = data.rows.reduce(function (memo, entry) {
-                    memo[entry.key] = entry.value;
-                    return memo;
-                }, {});
-
-                if (console && console.debug) {
-                    console.debug("Total show count", TOTALS);
-                }
-            });
-    }
-
-    function fetchEpisodeTotals() {
-        return fetch(`${DATABASE_LOCATION}/_design/aggregated/_view/episodes?group=true&startkey=${START_YEAR}&endkey=${END_YEAR}`)
-            .then(res => res.json())
-            .then(data => {
-                EPISODE_TOTALS = data.rows.reduce(function (memo, entry) {
-                    var value = entry.value.sum / entry.value.count;
-                    memo[entry.key] = Math.round(value);
-                    return memo;
-                }, {});
-
-                if (console && console.debug) {
-                    console.debug("Total episode averages", EPISODE_TOTALS);
-                }
-            });
-    }
-
     function enableForm() {
+        NBB.Common.setupDownloads();
+
         $genres.removeAttribute("disabled");
         $themes.removeAttribute("disabled");
+
         updateCharts();
     }
 
     Promise.all([
-        fetchTotals(),
-        fetchEpisodeTotals(),
+        NBB.Common.fetchTotals(),
+        NBB.Common.fetchEpisodeTotals(),
         populateAll("genres", $genres),
         populateAll("themes", $themes)
     ]).then(enableForm);
