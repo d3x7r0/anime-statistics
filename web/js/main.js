@@ -327,7 +327,7 @@
     }
 
     function populateAll(type, $target) {
-        fetch(`${DATABASE_LOCATION}/_design/${type}/_view/all?group=true`)
+        return fetch(`${DATABASE_LOCATION}/_design/${type}/_view/all?group=true`)
             .then(res => res.json())
             .then(function (data) {
                 var entries = data.rows.filter(d => d.value >= MIN_COUNT);

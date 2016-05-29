@@ -7,26 +7,17 @@
 
     <link rel="stylesheet" href="../node_modules/purecss/build/pure-min.css"/>
     <link rel="stylesheet" href="../node_modules/purecss/build/grids-responsive-min.css"/>
-    <style>
-        .chart,
-        .form-select {
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            box-sizing: border-box;
-            padding: 1em;
-        }
-
-        .chart canvas {
-            margin: 0 auto;
-            max-width: 800px;
-            -ms-user-select: none;
-            -moz-user-select: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-    </style>
+    <link rel="stylesheet" href="css/main.css"/>
 </head>
 <body>
+    <div class="pure-menu pure-menu-horizontal top-menu">
+        <p class="pure-menu-heading">ANN Encyclopedia Statistics</p>
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item"><a href="./" class="pure-menu-link">Genres</a></li>
+            <li class="pure-menu-item"><a href="./year.html" class="pure-menu-link">Year</a></li>
+        </ul>
+    </div>
+
     <div class="charts pure-g">
         <div class="chart pure-u-1 pure-u-lg-1-2" id="absolute">
             <h2># of shows per year</h2>
