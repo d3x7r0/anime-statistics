@@ -16,6 +16,7 @@
 
     var $absolute = document.getElementById("absolute"),
         $relative = document.getElementById("relative"),
+        $relativeCumulative = document.getElementById("relative-cumulative"),
         $episodes = document.getElementById("episodes");
 
     var $genres = document.getElementById("genres"),
@@ -26,6 +27,8 @@
 
     $absolute.addEventListener("click", onDownloadClick);
     $relative.addEventListener("click", onDownloadClick);
+    $relativeCumulative.addEventListener("click", onDownloadClick);
+    $episodes.addEventListener("click", onDownloadClick);
 
     function onDatasetChange() {
         updateCharts();
@@ -52,18 +55,19 @@
             values.map(getData)
         ).then(ds => {
             if (console && console.debug) {
-                console.debug(ds);
+                console.debug("Genre data", ds);
             }
 
             drawAbsoluteChart(ds);
             drawRelativeChart(ds);
+            drawCumulativeRelativeChart(ds);
         });
 
         Promise.all(
             values.map(getEpisodeData)
         ).then(ds => {
             if (console && console.debug) {
-                console.debug(ds);
+                console.debug("Episode Count per Genre Data", ds);
             }
 
             drawEpisodesChart(ds);
@@ -162,6 +166,7 @@
     var charts = {
         "absolute": null,
         "relative": null,
+        "relative-cumulative": null,
         "episodes": null
     };
 
@@ -218,9 +223,42 @@
     }
 
     function drawRelativeChart(datasets) {
-
         if (charts["relative"]) {
             charts["relative"].destroy();
+        }
+
+        var yAxis = {
+            scaleLabel: {
+                display: true,
+                labelString: "percent"
+            },
+            ticks: {
+                max: 100,
+                steps: 20,
+                beginAtZero: true
+            }
+        };
+
+        var ds = datasets.map(ds => {
+            var years = Object.keys(TOTALS);
+            var res = Object.assign({}, ds);
+
+            res.data = res.data.map((value, idx) => {
+                var year = years[idx];
+                var v = (value / TOTALS[year] * 100);
+                v = v.toFixed(2);
+                return parseInt(v, 10);
+            });
+
+            return res;
+        });
+
+        charts["relative"] = drawChart($relative, ds, yAxis);
+    }
+
+    function drawCumulativeRelativeChart(datasets) {
+        if (charts["relative-cumulative"]) {
+            charts["relative-cumulative"].destroy();
         }
 
         var yAxis = {
@@ -230,28 +268,27 @@
                 labelString: "percent"
             },
             ticks: {
-                // max: 100,
-                // steps: 20,
                 beginAtZero: true
             }
         };
 
         var ds = datasets.map(ds => {
             var years = Object.keys(TOTALS);
+            var res = Object.assign({}, ds);
 
-            ds.fill = true;
+            res.fill = true;
 
-            ds.data = ds.data.map((value, idx) => {
+            res.data = res.data.map((value, idx) => {
                 var year = years[idx];
-                value = (value / TOTALS[year] * 100);
-                value = value.toFixed(2);
-                return parseInt(value, 10);
+                var v = (value / TOTALS[year] * 100);
+                v = v.toFixed(2);
+                return parseInt(v, 10);
             });
 
-            return ds;
+            return res;
         });
 
-        charts["relative"] = drawChart($relative, ds, yAxis);
+        charts["relative-cumulative"] = drawChart($relativeCumulative, ds, yAxis);
     }
 
     function drawChart($target, ds, yAxis) {
@@ -266,7 +303,7 @@
             type: "line",
             data: {
                 labels: LABELS,
-                datasets: ds
+                datasets: ds.slice(0)
             },
             responsive: true,
             options: {
@@ -318,6 +355,10 @@
                     memo[entry.key] = entry.value;
                     return memo;
                 }, {});
+
+                if (console && console.debug) {
+                    console.debug("Total show count", TOTALS);
+                }
             });
     }
 
@@ -331,7 +372,9 @@
                     return memo;
                 }, {});
 
-                console.debug(EPISODE_TOTALS);
+                if (console && console.debug) {
+                    console.debug("Total episode averages", EPISODE_TOTALS);
+                }
             });
     }
 
