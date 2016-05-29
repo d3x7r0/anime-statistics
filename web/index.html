@@ -9,6 +9,10 @@
         .chart {
             margin: 0 auto;
             max-width: 800px;
+            -ms-user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
     </style>
 </head>
@@ -21,8 +25,8 @@
         <p>
             <label for="relative">Mode</label>
             <select id="relative" name="relative">
-                <option value="relative" selected>Relative</option>
-                <option value="absolute">Absolute</option>
+                <option value="absolute" selected>Absolute</option>
+                <option value="relative">Relative</option>
             </select>
 
             <a href="#" download="canvas.png" id="download">Save to PNG</a>

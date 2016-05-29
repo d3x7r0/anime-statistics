@@ -1,7 +1,7 @@
 /* globals Chart:false, randomColor:false */
 (function () {
     const DATABASE_LOCATION = "http://127.0.0.1:5984/ann/";
-    const START_YEAR = 1980;
+    const START_YEAR = 1970;
     const END_YEAR = 2016;
     const MIN_COUNT = 25;
 
@@ -113,11 +113,42 @@
             chart.destroy();
         }
 
+        var ds = datasets;
+
+        var yAxis = {
+            scaleLabel: {
+                display: true,
+                labelString: "count"
+            },
+            ticks: {
+                beginAtZero: true
+            }
+        };
+
+        if (MODE === "relative") {
+            ds = [{
+                label: "total",
+                data: Object.keys(TOTALS).map(() => 100),
+                fill: false
+            }].concat(ds || []);
+
+            yAxis.ticks.max = 100;
+            yAxis.ticks.steps = 20;
+
+            yAxis.scaleLabel.labelString = "percent";
+        } else {
+            ds = [{
+                label: "total",
+                data: Object.keys(TOTALS).map(y => TOTALS[y]),
+                fill: false
+            }].concat(ds || []);
+        }
+
         chart = new Chart($output, {
             type: "line",
             data: {
                 labels: LABELS,
-                datasets: datasets
+                datasets: ds
             },
             responsive: true,
             options: {
@@ -128,12 +159,7 @@
                             labelString: "year"
                         }
                     }],
-                    yAxes: [{
-                        scaleLabel: {
-                            display: true,
-                            labelString: MODE === "relative" ? "percent" : "count"
-                        }
-                    }]
+                    yAxes: [yAxis]
                 }
             }
         });
@@ -176,6 +202,7 @@
         $genres.removeAttribute("disabled");
         $themes.removeAttribute("disabled");
         updateMode();
+        updateChart();
     }
 
     Promise.all([
