@@ -1,6 +1,6 @@
 /* globals Chart:false, randomColor:false, NBB: false */
 (function () {
-    const MAX_CHART_ENTRIES = 10;
+    const MAX_CHART_ENTRIES = 15;
 
     var $topGenresChart = document.getElementById("topGenresChart"),
         $topThemesChart = document.getElementById("topThemesChart"),
