@@ -31,14 +31,14 @@
     function onDownloadClick(e) {
         if (e.target && e.target.matches(".js-download")) {
 
-            var $parent = e.parentNode.querySelectorAll(".js-output");
+            var $canvas = this.querySelectorAll(".js-output")[0];
 
-            if (!charts["absolute"] || !charts["relative"]) {
+            if (!$canvas && !charts["absolute"] || !charts["relative"]) {
                 e.preventDefault();
                 return false;
             }
 
-            this.href = $parent.toDataURL("image/png");
+            e.target.href = $canvas.toDataURL("image/png");
         }
     }
 
