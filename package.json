@@ -6,6 +6,9 @@
   "scripts": {},
   "author": "Luís Nabais <dextro@nonsensebb.com>",
   "license": "MIT",
+  "engines": {
+    "node": "~6.2.0"
+  },
   "dependencies": {
     "bluebird": "^3.4.0",
     "chart.js": "^2.1.4",
