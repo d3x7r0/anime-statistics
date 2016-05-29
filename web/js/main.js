@@ -214,7 +214,7 @@
         };
 
         ds = [{
-            label: "total",
+            label: "overall",
             data: Object.keys(EPISODE_TOTALS).map(y => EPISODE_TOTALS[y]),
             fill: false
         }].concat(ds || []);
