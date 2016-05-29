@@ -8,51 +8,53 @@
     var LABELS = [];
     var TOTALS = {};
 
-    var MODE;
-
     for (var i = START_YEAR; i <= END_YEAR; i++) {
         LABELS.push(i);
     }
 
-    var $output = document.getElementById("output"),
-        $genres = document.getElementById("genres"),
-        $themes = document.getElementById("themes"),
-        $mode = document.getElementById("relative"),
-        $download = document.getElementById("download");
+    var $absolute = document.getElementById("absolute"),
+        $relative = document.getElementById("relative");
+
+    var $genres = document.getElementById("genres"),
+        $themes = document.getElementById("themes");
 
     $genres.addEventListener("change", onDatasetChange);
     $themes.addEventListener("change", onDatasetChange);
-    $mode.addEventListener("change", onModeChange);
-    $download.addEventListener("click", onDownloadClick);
+
+    $absolute.addEventListener("click", onDownloadClick);
+    $relative.addEventListener("click", onDownloadClick);
 
     function onDatasetChange() {
-        updateChart();
-    }
-
-    function onModeChange() {
-        updateMode();
-        onDatasetChange();
+        updateCharts();
     }
 
     function onDownloadClick(e) {
-        if (!chart) {
-            e.preventDefault();
-            return false;
+        if (e.target && e.target.matches(".js-download")) {
+
+            var $parent = e.parentNode.querySelectorAll(".js-output");
+
+            if (!charts["absolute"] || !charts["relative"]) {
+                e.preventDefault();
+                return false;
+            }
+
+            this.href = $parent.toDataURL("image/png");
         }
-
-        this.href = $output.toDataURL("image/png");
     }
 
-    function updateMode() {
-        MODE = $mode.value;
-    }
-
-    function updateChart() {
+    function updateCharts() {
         var values = getActive();
 
         Promise.all(
             values.map(getData)
-        ).then(drawChart);
+        ).then(ds => {
+            if (console && console.debug) {
+                console.debug(ds);
+            }
+
+            drawAbsoluteChart(ds);
+            drawRelativeChart(ds);
+        });
     }
 
     function getActive() {
@@ -77,24 +79,46 @@
                 data: data,
                 fill: false,
                 backgroundColor: entry.color,
-                borderColor: entry.color
+                borderColor: lightenDarkenColor(entry.color, -35)
             }));
+    }
+
+    // src: https://css-tricks.com/snippets/javascript/lighten-darken-color/
+    function lightenDarkenColor(col, amt) {
+
+        var usePound = false;
+
+        if (col[0] == "#") {
+            col = col.slice(1);
+            usePound = true;
+        }
+
+        var num = parseInt(col, 16);
+
+        var r = (num >> 16) + amt;
+
+        if (r > 255) r = 255;
+        else if (r < 0) r = 0;
+
+        var b = ((num >> 8) & 0x00FF) + amt;
+
+        if (b > 255) b = 255;
+        else if (b < 0) b = 0;
+
+        var g = (num & 0x0000FF) + amt;
+
+        if (g > 255) g = 255;
+        else if (g < 0) g = 0;
+
+        return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
+
     }
 
     function processEntries(entries) {
         var data = [].concat(entries && entries.rows || [])
             .map(d => [d.key[1], d.value])
             .reduce((memo, entry) => {
-                var year = entry[0],
-                    value = entry[1];
-
-                if (MODE === "relative") {
-                    value = (value / TOTALS[year] * 100);
-                    value = value.toFixed(2);
-                }
-
-                memo[year] = value;
-
+                memo[entry[0]] = entry[1];
                 return memo;
             }, {});
 
@@ -104,13 +128,14 @@
         }, []);
     }
 
-    var chart;
+    var charts = {
+        "absolute": null,
+        "relative": null
+    };
 
-    function drawChart(datasets) {
-        console.debug(datasets);
-
-        if (chart) {
-            chart.destroy();
+    function drawAbsoluteChart(datasets) {
+        if (charts["absolute"]) {
+            charts["absolute"].destroy();
         }
 
         var ds = datasets;
@@ -125,26 +150,61 @@
             }
         };
 
-        if (MODE === "relative") {
-            ds = [{
-                label: "total",
-                data: Object.keys(TOTALS).map(() => 100),
-                fill: false
-            }].concat(ds || []);
+        ds = [{
+            label: "total",
+            data: Object.keys(TOTALS).map(y => TOTALS[y]),
+            fill: false
+        }].concat(ds || []);
 
-            yAxis.ticks.max = 100;
-            yAxis.ticks.steps = 20;
+        charts["absolute"] = drawChart($absolute, ds, yAxis);
+    }
 
-            yAxis.scaleLabel.labelString = "percent";
-        } else {
-            ds = [{
-                label: "total",
-                data: Object.keys(TOTALS).map(y => TOTALS[y]),
-                fill: false
-            }].concat(ds || []);
+    function drawRelativeChart(datasets) {
+
+        if (charts["relative"]) {
+            charts["relative"].destroy();
         }
 
-        chart = new Chart($output, {
+        var yAxis = {
+            stacked: true,
+            scaleLabel: {
+                display: true,
+                labelString: "percent"
+            },
+            ticks: {
+                // max: 100,
+                // steps: 20,
+                beginAtZero: true
+            }
+        };
+
+        var ds = datasets.map(ds => {
+            var years = Object.keys(TOTALS);
+
+            ds.fill = true;
+
+            ds.data = ds.data.map((value, idx) => {
+                var year = years[idx];
+                value = (value / TOTALS[year] * 100);
+                value = value.toFixed(2);
+                return parseInt(value, 10);
+            });
+
+            return ds;
+        });
+
+        charts["relative"] = drawChart($relative, ds, yAxis);
+    }
+
+    function drawChart($target, ds, yAxis) {
+        var $output = $target.querySelectorAll(".js-output");
+
+        if (!$output.length) {
+            console.warn("Missing canvas", $target);
+            return;
+        }
+
+        return new Chart($output[0], {
             type: "line",
             data: {
                 labels: LABELS,
@@ -152,6 +212,12 @@
             },
             responsive: true,
             options: {
+                tooltips: {
+                    mode: "label"
+                },
+                hover: {
+                    mode: "label"
+                },
                 scales: {
                     xAxes: [{
                         scaleLabel: {
@@ -198,11 +264,9 @@
     }
 
     function enableForm() {
-        $mode.removeAttribute("disabled");
         $genres.removeAttribute("disabled");
         $themes.removeAttribute("disabled");
-        updateMode();
-        updateChart();
+        updateCharts();
     }
 
     Promise.all([

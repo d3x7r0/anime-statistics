@@ -13,24 +13,30 @@
             -moz-user-select: none;
             -webkit-user-select: none;
             user-select: none;
+            width: 50%;
+        }
+
+        .charts {
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            max-width: 100%;
         }
     </style>
 </head>
 <body>
-    <div class="chart">
-        <canvas id="output" width="800" height="600"></canvas>
+    <div class="charts">
+        <div class="chart" id="absolute">
+            <canvas class="js-output" width="800" height="600"></canvas>
+            <a href="#" download="canvas.png">Save to PNG</a>
+        </div>
+        <div class="chart" id="relative">
+            <canvas class="js-output" width="800" height="600"></canvas>
+            <a href="#" download="canvas.png" class="js-download">Save to PNG</a>
+        </div>
     </div>
 
     <form id="controls">
-        <p>
-            <label for="relative">Mode</label>
-            <select id="relative" name="relative">
-                <option value="absolute" selected>Absolute</option>
-                <option value="relative">Relative</option>
-            </select>
-
-            <a href="#" download="canvas.png" id="download">Save to PNG</a>
-        </p>
         <fieldset name="genres" id="genres" disabled>
             <legend>Genres:</legend>
             <div class="js-values">
