@@ -3,10 +3,12 @@
     const DATABASE_LOCATION = "http://127.0.0.1:5984/ann/";
     const START_YEAR = 1975;
     const END_YEAR = 2015;
-    const MIN_COUNT = 25;
     const MAX_CHART_ENTRIES = 10;
 
     var LABELS = [];
+
+    var TOTALS,
+        EPISODE_TOTALS;
 
     for (var i = START_YEAR; i <= END_YEAR; i++) {
         LABELS.push(i);
@@ -15,7 +17,8 @@
     var $topGenresChart = document.getElementById("topGenresChart"),
         $topThemesChart = document.getElementById("topThemesChart"),
         $topGenres = document.getElementById("topGenres"),
-        $topThemes = document.getElementById("topThemes");
+        $topThemes = document.getElementById("topThemes"),
+        $yearDetails = document.getElementById("yearDetails");
 
     var $year = document.getElementById("year");
 
@@ -43,9 +46,11 @@
     }
 
     function updateCharts() {
+        var active = getActive();
+
         getData(
             "genres",
-            getActive()
+            active
         ).then(ds => {
             if (console && console.debug) {
                 console.debug(ds);
@@ -57,7 +62,7 @@
 
         getData(
             "themes",
-            getActive()
+            active
         ).then(ds => {
             if (console && console.debug) {
                 console.debug(ds);
@@ -66,6 +71,8 @@
             printTop($topThemes, ds);
             drawTopThemesChart(ds);
         });
+
+        updateStats(active);
     }
 
     function getActive() {
@@ -167,21 +174,21 @@
         var data = dataset
             .slice(0, MAX_CHART_ENTRIES)
             .reduce((memo, entry) => {
-            memo.labels.push(entry.label);
+                memo.labels.push(entry.label);
 
-            memo.datasets[0].data.push(entry.value);
-            memo.datasets[0].backgroundColor.push(entry.backgroundColor);
-            memo.datasets[0].hoverBackgroundColor.push(entry.hoverBackgroundColor);
+                memo.datasets[0].data.push(entry.value);
+                memo.datasets[0].backgroundColor.push(entry.backgroundColor);
+                memo.datasets[0].hoverBackgroundColor.push(entry.hoverBackgroundColor);
 
-            return memo;
-        }, {
-            labels: [],
-            datasets: [{
-                data: [],
-                backgroundColor: [],
-                hoverBackgroundColor: []
-            }]
-        });
+                return memo;
+            }, {
+                labels: [],
+                datasets: [{
+                    data: [],
+                    backgroundColor: [],
+                    hoverBackgroundColor: []
+                }]
+            });
 
         return new Chart($output, {
             type: "pie",
@@ -189,34 +196,61 @@
         });
     }
 
-    function populateAll(type, $target) {
-        return fetch(`${DATABASE_LOCATION}/_design/${type}/_view/all?group=true`)
+    function updateStats(entry) {
+        var year = entry.key;
+
+        $yearDetails.innerHTML = `<li><strong>Number of shows:</strong> ${TOTALS[year]}</li>` +
+            `<li><strong>Average Episode Count:</strong> ${EPISODE_TOTALS[year]}</li>`;
+    }
+
+    function fetchTotals() {
+        return fetch(`${DATABASE_LOCATION}/_design/aggregated/_view/all?group=true&startkey=${START_YEAR}&endkey=${END_YEAR}`)
             .then(res => res.json())
-            .then(function (data) {
-                var entries = data.rows.filter(d => d.value >= MIN_COUNT);
+            .then(data => {
+                TOTALS = data.rows.reduce(function (memo, entry) {
+                    memo[entry.key] = entry.value;
+                    return memo;
+                }, {});
 
-                var colors = randomColor({count: entries.length});
-
-                entries = entries.map((entry, idx) => {
-                    entry.color = colors[idx];
-                    return entry;
-                });
-
-                $target.innerHTML = entries.map(printOption).join("\n");
-                $target.value = START_YEAR;
+                if (console && console.debug) {
+                    console.debug("Total show count", TOTALS);
+                }
             });
     }
 
-    function printOption(entry) {
-        return `<option value="${entry.key}" id="entry_${entry.key}" />${entry.key}</option>`;
+    function fetchEpisodeTotals() {
+        return fetch(`${DATABASE_LOCATION}/_design/aggregated/_view/episodes?group=true&startkey=${START_YEAR}&endkey=${END_YEAR}`)
+            .then(res => res.json())
+            .then(data => {
+                EPISODE_TOTALS = data.rows.reduce(function (memo, entry) {
+                    var value = entry.value.sum / entry.value.count;
+                    memo[entry.key] = Math.round(value);
+                    return memo;
+                }, {});
+
+                if (console && console.debug) {
+                    console.debug("Total episode averages", EPISODE_TOTALS);
+                }
+            });
+    }
+
+    function printOption(key) {
+        return `<option value="${key}">${key}</option>`;
     }
 
     function enableForm() {
+        $year.innerHTML = Object.keys(TOTALS)
+            .map(printOption)
+            .join("\n");
+
+        $year.value = START_YEAR;
+
         $year.removeAttribute("disabled");
         updateCharts();
     }
 
     Promise.all([
-        populateAll("year", $year)
+        fetchTotals(),
+        fetchEpisodeTotals()
     ]).then(enableForm);
 })();
