@@ -1,7 +1,7 @@
 /* globals Chart:false, randomColor:false */
 (function () {
     const DATABASE_LOCATION = "http://127.0.0.1:5984/ann/";
-    const START_YEAR = 1970;
+    const START_YEAR = 1975;
     const END_YEAR = 2015;
     const MIN_COUNT = 25;
 
