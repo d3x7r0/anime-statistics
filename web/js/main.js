@@ -14,21 +14,19 @@
         LABELS.push(i);
     }
 
-    var $output = document.getElementById("output");
-    var $genres = document.getElementById("genres");
-    var $themes = document.getElementById("themes");
-    var $mode = document.getElementById("relative");
+    var $output = document.getElementById("output"),
+        $genres = document.getElementById("genres"),
+        $themes = document.getElementById("themes"),
+        $mode = document.getElementById("relative"),
+        $download = document.getElementById("download");
 
     $genres.addEventListener("change", onDatasetChange);
     $themes.addEventListener("change", onDatasetChange);
     $mode.addEventListener("change", onModeChange);
+    $download.addEventListener("click", onDownloadClick);
 
     function onDatasetChange() {
-        var values = getActive();
-
-        Promise.all(
-            values.map(getData)
-        ).then(drawChart);
+        updateChart();
     }
 
     function onModeChange() {
@@ -36,8 +34,25 @@
         onDatasetChange();
     }
 
+    function onDownloadClick(e) {
+        if (!chart) {
+            e.preventDefault();
+            return false;
+        }
+
+        this.href = $output.toDataURL("image/png");
+    }
+
     function updateMode() {
         MODE = $mode.value;
+    }
+
+    function updateChart() {
+        var values = getActive();
+
+        Promise.all(
+            values.map(getData)
+        ).then(drawChart);
     }
 
     function getActive() {

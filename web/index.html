@@ -10,11 +10,15 @@
     <canvas id="output" width="640" height="480"></canvas>
 
     <form id="controls">
-        <label for="relative">Mode</label>
-        <select id="relative" name="relative">
-            <option value="relative" selected>Relative</option>
-            <option value="absolute">Absolute</option>
-        </select>
+        <p>
+            <label for="relative">Mode</label>
+            <select id="relative" name="relative">
+                <option value="relative" selected>Relative</option>
+                <option value="absolute">Absolute</option>
+            </select>
+
+            <a href="#" download="canvas.png" id="download">Save to PNG</a>
+        </p>
         <fieldset name="genres" id="genres" disabled>
             <legend>Genres:</legend>
             <div class="js-values">
