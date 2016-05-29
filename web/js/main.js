@@ -348,7 +348,7 @@
     }
 
     function fetchTotals() {
-        return fetch(`${DATABASE_LOCATION}/_design/aggregated/_view/count?group=true&startkey=${START_YEAR}&endkey=${END_YEAR}`)
+        return fetch(`${DATABASE_LOCATION}/_design/aggregated/_view/all?group=true&startkey=${START_YEAR}&endkey=${END_YEAR}`)
             .then(res => res.json())
             .then(data => {
                 TOTALS = data.rows.reduce(function (memo, entry) {
