@@ -1,54 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Anime Statistics</title>
 
-    <link rel="stylesheet" href="../node_modules/normalize.css/normalize.css"/>
+    <link rel="stylesheet" href="../node_modules/purecss/build/pure-min.css"/>
+    <link rel="stylesheet" href="../node_modules/purecss/build/grids-responsive-min.css"/>
     <style>
-        .chart {
+        .chart canvas {
             margin: 0 auto;
             max-width: 800px;
             -ms-user-select: none;
             -moz-user-select: none;
             -webkit-user-select: none;
             user-select: none;
-            width: 50%;
         }
 
-        .charts {
-            display: -webkit-flex;
-            display: -ms-flexbox;
-            display: flex;
-            max-width: 100%;
+        .form-select {
+            box-sizing: border-box;
+            padding: 1em;
         }
     </style>
 </head>
 <body>
-    <div class="charts">
-        <div class="chart" id="absolute">
+    <div class="charts pure-g">
+        <div class="chart pure-u-1 pure-u-lg-1-2" id="absolute">
             <canvas class="js-output" width="800" height="600"></canvas>
-            <a href="#" download="canvas.png">Save to PNG</a>
+            <a href="#" class="pure-button pure-button-primary js-download" download="canvas.png">Save to PNG</a>
         </div>
-        <div class="chart" id="relative">
+        <div class="chart pure-u-1 pure-u-lg-1-2" id="relative">
             <canvas class="js-output" width="800" height="600"></canvas>
-            <a href="#" download="canvas.png" class="js-download">Save to PNG</a>
+            <a href="#" class="pure-button pure-button-primary js-download" download="canvas.png">Save to PNG</a>
         </div>
     </div>
 
-    <form id="controls">
-        <fieldset name="genres" id="genres" disabled>
-            <legend>Genres:</legend>
-            <div class="js-values">
-                <p>loading...</p>
-            </div>
-        </fieldset>
-        <fieldset name="themes" id="themes" disabled>
-            <legend>Themes:</legend>
-            <div class="js-values">
-                <p>loading...</p>
-            </div>
-        </fieldset>
+    <form id="controls" class="pure-form pure-g">
+        <div class="form-select pure-u-1 pure-u-md-1-2">
+            <fieldset name="genres" id="genres" disabled>
+                <legend>Genres:</legend>
+                <div class="js-values">
+                    <p>loading...</p>
+                </div>
+            </fieldset>
+        </div>
+        <div class="form-select pure-u-1 pure-u-md-1-2">
+            <fieldset name="themes" id="themes" disabled>
+                <legend>Themes:</legend>
+                <div class="js-values">
+                    <p>loading...</p>
+                </div>
+            </fieldset>
+        </div>
     </form>
 
     <script src="../node_modules/chart.js/dist/Chart.bundle.js"></script>

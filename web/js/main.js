@@ -249,7 +249,7 @@
     }
 
     function printOption(entry) {
-        return `<p><label for="entry_${entry.key}"><input type="checkbox" value="${entry.key}" data-color="${entry.color}" id="entry_${entry.key}" />${entry.key}</label></p>`;
+        return `<label for="entry_${entry.key}" class="pure-checkbox"><input type="checkbox" value="${entry.key}" data-color="${entry.color}" id="entry_${entry.key}" />${entry.key}</label>`;
     }
 
     function fetchTotals() {
