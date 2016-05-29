@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Anime Statistics</title>
+
+    <link rel="stylesheet" href="../node_modules/normalize.css/normalize.css"/>
+</head>
+<body>
+    <canvas id="output" width="640" height="480"></canvas>
+
+    <form id="controls">
+        <label for="relative">Mode</label>
+        <select id="relative" name="relative">
+            <option value="relative" selected>Relative</option>
+            <option value="absolute">Absolute</option>
+        </select>
+        <fieldset name="genres" id="genres" disabled>
+            <legend>Genres:</legend>
+            <div class="js-values">
+                <p>loading...</p>
+            </div>
+        </fieldset>
+        <fieldset name="themes" id="themes" disabled>
+            <legend>Themes:</legend>
+            <div class="js-values">
+                <p>loading...</p>
+            </div>
+        </fieldset>
+    </form>
+
+    <script src="../node_modules/chart.js/dist/Chart.bundle.js"></script>
+    <script src="../node_modules/bluebird/js/browser/bluebird.js"></script>
+    <script src="../node_modules/randomcolor/randomColor.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

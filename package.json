@@ -8,9 +8,14 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.4.0",
+    "chart.js": "^2.1.4",
     "fetch": "^1.0.1",
+    "install": "^0.8.1",
     "nano": "^6.2.0",
     "node-fetch": "^1.5.3",
+    "normalize.css": "^4.1.1",
+    "npm": "^3.9.3",
+    "randomcolor": "^0.4.4",
     "rc": "^1.1.6",
     "slug": "^0.9.1",
     "xml2js": "^0.4.16"
