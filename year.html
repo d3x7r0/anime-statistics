@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>ANN Encyclopedia Statistics :: Year Details</title>
+
+    <link rel="stylesheet" href="css/bundle.min.css"/>
+</head>
+<body>
+    <div class="pure-menu pure-menu-horizontal top-menu">
+        <p class="pure-menu-heading">ANN Encyclopedia Statistics</p>
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item"><a href="./" class="pure-menu-link">Genres</a></li>
+            <li class="pure-menu-item"><a href="./year.html" class="pure-menu-link">Year</a></li>
+        </ul>
+    </div>
+
+    <div class="charts pure-g">
+        <form id="controls" class="pure-form pure-u-1">
+            <div class="form-select">
+                <label for="year">Year:</label>
+                <select id="year" name="year" class="js-values" disabled></select>
+            </div>
+        </form>
+
+        <div class="year-details pure-u-1">
+            <h2>Year stats:</h2>
+            <ul id="yearDetails"></ul>
+        </div>
+
+        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="topGenresChart">
+            <h2>Top 15 Genres</h2>
+            <canvas class="js-output" width="800" height="600"></canvas>
+            <a href="#" class="pure-button pure-button-primary js-download pure-button-disabled" download="canvas.png">Save to PNG</a>
+        </div>
+        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="topThemesChart">
+            <h2>Top 15 Themes</h2>
+            <canvas class="js-output" width="800" height="600"></canvas>
+            <a href="#" class="pure-button pure-button-primary js-download pure-button-disabled" download="canvas.png">Save to PNG</a>
+        </div>
+        <div class="top pure-u-1 pure-u-lg-1-2" id="topGenres">
+            <h2>Top Genres</h2>
+            <ol class="js-output">
+                <li>loading...</li>
+            </ol>
+        </div>
+        <div class="top pure-u-1 pure-u-lg-1-2" id="topThemes">
+            <h2>Top Themes</h2>
+            <ol class="js-output">
+                <li>loading...</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="js/bundle.min.js"></script>
+    <script>
+        window.NBB.Year.run();
+    </script>
+</body>
+</html>
