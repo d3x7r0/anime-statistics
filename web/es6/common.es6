@@ -1,4 +1,5 @@
-import DB from "./db";
+// import DB from "./db";
+import DB from "./files";
 import Promise from "bluebird";
 
 const START_YEAR = 1975;
