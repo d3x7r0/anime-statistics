@@ -12,21 +12,19 @@
     "build": "./build.sh"
   },
   "dependencies": {
-    "babel-plugin-transform-bluebird": "^0.1.1",
     "bluebird": "^3.4.0",
-    "chart.js": "^2.1.4",
-    "fetch": "^1.0.1",
-    "install": "^0.8.1",
     "nano": "^6.2.0",
     "node-fetch": "^1.5.3",
     "npm": "^3.9.3",
-    "purecss": "^0.6.0",
-    "randomcolor": "^0.4.4",
     "rc": "^1.1.6",
     "slug": "^0.9.1",
     "xml2js": "^0.4.16"
   },
   "devDependencies": {
+    "purecss": "^0.6.0",
+    "randomcolor": "^0.4.4",
+    "chart.js": "^2.1.4",
+    "fetch": "^1.0.1",
     "babel-cli": "^6.9.0",
     "babel-plugin-external-helpers": "^6.8.0",
     "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
@@ -47,7 +45,8 @@
             "bluebird": "Promise",
             "chart": "Chart",
             "randomcolor": "randomColor",
-            "common": "webEs6Common"
+            "common": "webEs6Common",
+            "db": "webEs6Db"
           }
         }
       ]

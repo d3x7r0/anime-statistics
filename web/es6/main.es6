@@ -1,6 +1,7 @@
 import Promise from "bluebird";
 import Chart from "chart.js";
 import randomColor from "randomcolor";
+import DB from "./db";
 import Common from "./common";
 
 const MIN_COUNT = 25;
@@ -58,7 +59,7 @@ function getActive() {
 }
 
 function getData(entry) {
-    return Common.fetchDB(`_design/aggregated/_view/byKey?group=true&startkey=["${entry.key}"]&endkey=["${entry.key}", {}]`)
+    return DB.getData(entry.key)
         .then(processEntries)
         .then(data => ({
             label: entry.key,
@@ -70,7 +71,7 @@ function getData(entry) {
 }
 
 function getEpisodeData(entry) {
-    return Common.fetchDB(`_design/aggregated/_view/episodesByKey?group=true&startkey=["${entry.key}"]&endkey=["${entry.key}", {}]`)
+    return DB.getEpisodeData(entry.key)
         .then(processEntries)
         .then(calculateAverages)
         .then(data => ({
@@ -272,7 +273,7 @@ function drawChart($target, ds, yAxis) {
 }
 
 function populateAll(type, $target) {
-    return Common.fetchDB(`_design/${type}/_view/all?group=true`)
+    return DB.getGenreData(type)
         .then(function (data) {
             var entries = data.rows.filter(d => d.value >= MIN_COUNT);
 
@@ -313,9 +314,8 @@ export default function run() {
     $themes.addEventListener("change", onDatasetChange);
 
     Promise.all([
-        Common.fetchTotals(),
-        Common.fetchEpisodeTotals(),
+        Common.init(),
         populateAll("genres", $genres),
         populateAll("themes", $themes)
     ]).then(enableForm);
-};
+}

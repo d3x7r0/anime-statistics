@@ -1,30 +1,27 @@
-const DATABASE_LOCATION = "http://127.0.0.1:5984/ann/";
+import DB from "./db";
+import Promise from "bluebird";
 
 const START_YEAR = 1975;
 const END_YEAR = 2015;
 
 var TOTALS, EPISODE_TOTALS;
 
-function fetchDB(uri) {
-    return fetch(DATABASE_LOCATION + uri)
-        .then(res => res.json());
-}
-
 function fetchTotals() {
-    return fetchDB(`/_design/aggregated/_view/all?group=true&startkey=${START_YEAR}&endkey=${END_YEAR}`).then(data => {
-        TOTALS = data.rows.reduce(function (memo, entry) {
-            memo[entry.key] = entry.value;
-            return memo;
-        }, {});
+    return DB.fetchAllShows(START_YEAR, END_YEAR)
+        .then(data => {
+            TOTALS = data.rows.reduce(function (memo, entry) {
+                memo[entry.key] = entry.value;
+                return memo;
+            }, {});
 
-        if (console && console.debug) {
-            console.debug("Total show count", TOTALS);
-        }
-    });
+            if (console && console.debug) {
+                console.debug("Total show count", TOTALS);
+            }
+        });
 }
 
 function fetchEpisodeTotals() {
-    return fetchDB(`/_design/aggregated/_view/episodes?group=true&startkey=${START_YEAR}&endkey=${END_YEAR}`)
+    return DB.fetchEpisodeData(START_YEAR, END_YEAR)
         .then(data => {
             EPISODE_TOTALS = data.rows.reduce(function (memo, entry) {
                 var value = entry.value.sum / entry.value.count;
@@ -96,6 +93,13 @@ function lightenDarkenColor(col, amt) {
 
 }
 
+function init() {
+    return Promise.all([
+        fetchTotals(),
+        fetchEpisodeTotals()
+    ]);
+}
+
 export default {
     START_YEAR: START_YEAR,
     END_YEAR: END_YEAR,
@@ -105,9 +109,7 @@ export default {
     getEpisodeTotals: function () {
         return EPISODE_TOTALS;
     },
-    fetchDB: fetchDB,
-    fetchTotals: fetchTotals,
-    fetchEpisodeTotals: fetchEpisodeTotals,
     setupDownloads: setupDownloads,
-    lightenDarkenColor: lightenDarkenColor
+    lightenDarkenColor: lightenDarkenColor,
+    init: init
 };

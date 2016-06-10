@@ -1,6 +1,7 @@
 import Promise from "bluebird";
 import Chart from "chart.js";
 import randomColor from "randomcolor";
+import DB from "./db";
 import Common from "./common";
 
 const MAX_CHART_ENTRIES = 15;
@@ -55,7 +56,7 @@ function getActive() {
 }
 
 function getData(type, entry) {
-    return Common.fetchDB(`_design/${type}/_view/byYear?group=true&startkey=[${entry.key}]&endkey=[${entry.key}, {}]`)
+    return DB.getYearData(type, entry.key)
         .then(processEntries);
 }
 
@@ -168,8 +169,6 @@ export default function run() {
 
     $year.addEventListener("change", onDatasetChange);
 
-    Promise.all([
-        Common.fetchTotals(),
-        Common.fetchEpisodeTotals()
-    ]).then(enableForm);
-};
+    Common.init()
+        .then(enableForm);
+}
