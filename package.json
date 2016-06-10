@@ -3,13 +3,16 @@
   "version": "0.0.1",
   "description": "Anime Statistics per Season",
   "main": "index.js",
-  "scripts": {},
   "author": "Luís Nabais <dextro@nonsensebb.com>",
   "license": "MIT",
   "engines": {
     "node": "~6.2.0"
   },
+  "scripts": {
+    "build": "./build.sh"
+  },
   "dependencies": {
+    "babel-plugin-transform-bluebird": "^0.1.1",
     "bluebird": "^3.4.0",
     "chart.js": "^2.1.4",
     "fetch": "^1.0.1",
@@ -22,5 +25,34 @@
     "rc": "^1.1.6",
     "slug": "^0.9.1",
     "xml2js": "^0.4.16"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-plugin-external-helpers": "^6.8.0",
+    "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
+    "babel-plugin-transform-object-assign": "^6.8.0",
+    "babel-preset-es2015": "^6.9.0"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ],
+    "plugins": [
+      "external-helpers",
+      "transform-object-assign",
+      [
+        "transform-es2015-modules-umd",
+        {
+          "globals": {
+            "bluebird": "Promise",
+            "chart": "Chart",
+            "randomcolor": "randomColor",
+            "common": "webEs6Common"
+          }
+        }
+      ]
+    ],
+    "moduleIds": true,
+    "sourceRoot": "web/es6"
   }
 }
