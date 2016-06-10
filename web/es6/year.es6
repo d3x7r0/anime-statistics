@@ -1,7 +1,5 @@
 import Chart from "chart.js";
 import randomColor from "randomcolor";
-// import DB from "./db";
-import DB from "./files";
 import Common from "./common";
 
 const MAX_CHART_ENTRIES = 15;
@@ -56,7 +54,7 @@ function getActive() {
 }
 
 function getData(type, entry) {
-    return DB.getYearData(type, entry.key)
+    return Common.DB.getYearData(type, entry.key)
         .then(processEntries);
 }
 

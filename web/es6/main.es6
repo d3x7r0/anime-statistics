@@ -1,8 +1,6 @@
 import Promise from "bluebird";
 import Chart from "chart.js";
 import randomColor from "randomcolor";
-// import DB from "./db";
-import DB from "./files";
 import Common from "./common";
 
 const MIN_COUNT = 25;
@@ -60,7 +58,7 @@ function getActive() {
 }
 
 function getData(entry) {
-    return DB.getData(entry.key)
+    return Common.DB.getData(entry.key)
         .then(processEntries)
         .then(data => ({
             label: entry.key,
@@ -72,7 +70,7 @@ function getData(entry) {
 }
 
 function getEpisodeData(entry) {
-    return DB.getEpisodeData(entry.key)
+    return Common.DB.getEpisodeData(entry.key)
         .then(processEntries)
         .then(calculateAverages)
         .then(data => ({
@@ -274,7 +272,7 @@ function drawChart($target, ds, yAxis) {
 }
 
 function populateAll(type, $target) {
-    return DB.getGenreData(type)
+    return Common.DB.getGenreData(type)
         .then(function (data) {
             var entries = data.rows.filter(d => d.value >= MIN_COUNT);
 

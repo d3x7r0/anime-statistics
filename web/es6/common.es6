@@ -104,6 +104,7 @@ function init() {
 export default {
     START_YEAR: START_YEAR,
     END_YEAR: END_YEAR,
+    DB: DB,
     getTotals: function () {
         return TOTALS;
     },
