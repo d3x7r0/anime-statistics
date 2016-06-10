@@ -1,3 +1,4 @@
 out.csv
 stats.csv
-web/js
+target
+.tmp

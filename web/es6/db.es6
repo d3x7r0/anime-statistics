@@ -1,5 +1,3 @@
-import fetch from "fetch";
-
 const DATABASE_LOCATION = "http://127.0.0.1:5984/ann/";
 
 function fetchDB(design, view, startKey, endKey) {

@@ -9,7 +9,7 @@
     "node": "~6.2.0"
   },
   "scripts": {
-    "build": "./build.sh"
+    "build": "./node_modules/.bin/grunt"
   },
   "dependencies": {
     "bluebird": "^3.4.0",
@@ -21,15 +21,23 @@
     "xml2js": "^0.4.16"
   },
   "devDependencies": {
-    "purecss": "^0.6.0",
-    "randomcolor": "^0.4.4",
-    "chart.js": "^2.1.4",
-    "fetch": "^1.0.1",
     "babel-cli": "^6.9.0",
     "babel-plugin-external-helpers": "^6.8.0",
     "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
     "babel-plugin-transform-object-assign": "^6.8.0",
-    "babel-preset-es2015": "^6.9.0"
+    "babel-preset-es2015": "^6.9.0",
+    "chart.js": "^2.1.4",
+    "grunt": "^1.0.1",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-cssmin": "^1.0.1",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-exec": "^0.4.7",
+    "load-grunt-tasks": "^3.5.0",
+    "purecss": "^0.6.0",
+    "randomcolor": "^0.4.4",
+    "whatwg-fetch": "^1.0.0"
   },
   "babel": {
     "presets": [
@@ -52,6 +60,37 @@
       ]
     ],
     "moduleIds": true,
-    "sourceRoot": "web/es6"
+    "sourceMaps": true
+  },
+  "eslintConfig": {
+    "env": {
+      "es6": true,
+      "node": true
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+      "indent": [
+        "error",
+        4
+      ],
+      "linebreak-style": [
+        "error",
+        "unix"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ],
+      "no-console": 0,
+      "no-unused-vars": 1,
+      "quotes": [
+        "warn",
+        "double",
+        {
+          "avoidEscape": true,
+          "allowTemplateLiterals": true
+        }
+      ]
+    }
   }
 }
