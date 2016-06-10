@@ -1,7 +1,7 @@
-import Promise from "bluebird";
 import Chart from "chart.js";
 import randomColor from "randomcolor";
-import DB from "./db";
+// import DB from "./db";
+import DB from "./files";
 import Common from "./common";
 
 const MAX_CHART_ENTRIES = 15;

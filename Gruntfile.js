@@ -53,6 +53,7 @@ module.exports = function (grunt) {
                         "node_modules/bluebird/js/browser/bluebird.js",
                         "node_modules/randomcolor/randomColor.js",
                         ".tmp/js/helpers.js",
+                        ".tmp/js/files.js",
                         ".tmp/js/db.js",
                         ".tmp/js/common.js",
                         ".tmp/js/**.js",
@@ -80,7 +81,8 @@ module.exports = function (grunt) {
                     cwd: "web",
                     expand: true,
                     src: [
-                        "**.html"
+                        "**.html",
+                        "data/**.json"
                     ],
                     dest: "target/"
                 }]

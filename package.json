@@ -54,6 +54,7 @@
             "chart": "Chart",
             "randomcolor": "randomColor",
             "common": "webEs6Common",
+            "files": "webEs6Files",
             "db": "webEs6Db"
           }
         }

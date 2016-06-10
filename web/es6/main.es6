@@ -1,7 +1,8 @@
 import Promise from "bluebird";
 import Chart from "chart.js";
 import randomColor from "randomcolor";
-import DB from "./db";
+// import DB from "./db";
+import DB from "./files";
 import Common from "./common";
 
 const MIN_COUNT = 25;
