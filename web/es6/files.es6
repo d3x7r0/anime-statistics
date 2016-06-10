@@ -19,7 +19,7 @@ function fetchFile(file) {
         });
 }
 
-function fetchTotalsFiltered(file) {
+function fetchTotalsFiltered(file, start, end) {
     return fetchFile(file).then(function (data) {
         data.rows = data.rows.filter(function (entry) {
             return entry.key >= start && entry.key <= end;
