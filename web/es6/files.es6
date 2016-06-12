@@ -23,6 +23,17 @@ function fetchFile(file) {
         });
 }
 
+function getLimitedDataFile(file, start, end) {
+    return fetchFile(file)
+        .then(function (data) {
+            data.rows = data.rows.filter(function (entry) {
+                return entry.key[0] >= start && entry.key[0] <= end;
+            });
+
+            return data;
+        });
+}
+
 function getFilteredDataFile(file, entry) {
     return fetchFile(file)
         .then(function (data) {
@@ -51,13 +62,7 @@ function fetchAllShows(start, end) {
 function fetchEpisodeData(start, end) {
     console.debug("Fetching episode data", start, end);
 
-    return fetchFile("episode_totals.json").then(function (data) {
-        data.rows = data.rows.filter(function (entry) {
-            return entry.key[0] >= start && entry.key[0] <= end;
-        });
-
-        return data;
-    });
+    return getLimitedDataFile("episode_totals.json", start, end);
 }
 
 // url: /_design/aggregated/_view/byKey?group=true
@@ -90,6 +95,13 @@ function getYearData(type, year) {
     return getFilteredDataFile("data_" + type + ".json", parseInt(year, 10));
 }
 
+// url: /_design/types/_view/byYear?group=true&startkey=[1975]&endkey=[1975,{}];
+function getTypesData(start, end) {
+    console.debug("Fetching types data");
+
+    return getLimitedDataFile("types.json", start, end);
+}
+
 // url: /_design/types/_view/byYear?group=true
 function getTypes(year) {
     console.debug("Fetching types data", year);
@@ -104,5 +116,6 @@ export default {
     getEpisodeData: getEpisodeData,
     getGenreData: getGenreData,
     getYearData: getYearData,
+    getTypesData: getTypesData,
     getTypes: getTypes
 };

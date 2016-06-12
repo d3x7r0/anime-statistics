@@ -63,6 +63,12 @@ function getYearData(type, year) {
     return fetchRange(type, "byYear", parseInt(year, 10));
 }
 
+function getTypesData(start, end) {
+    console.debug("Fetching types data");
+
+    return fetchRange("types", "byYear", start, end);
+}
+
 function getTypes(year) {
     console.debug("Fetching types data", year);
 
@@ -76,5 +82,6 @@ export default {
     getEpisodeData: getEpisodeData,
     getGenreData: getGenreData,
     getYearData: getYearData,
+    getTypesData: getTypesData,
     getTypes: getTypes
 };

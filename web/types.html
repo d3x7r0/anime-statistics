@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>ANN Encyclopedia Statistics</title>
+    <title>ANN Encyclopedia Statistics :: Types</title>
 
     <!--<link rel="stylesheet" href="../node_modules/purecss/build/pure-min.css"/>-->
     <!--<link rel="stylesheet" href="../node_modules/purecss/build/grids-responsive-min.css"/>-->
@@ -21,30 +21,9 @@
     </div>
 
     <div class="charts pure-g">
-        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="relative"></div>
-        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="relative-cumulative"></div>
-        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="absolute"></div>
-        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="episodes"></div>
+        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="types"></div>
+        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="typesRelative"></div>
     </div>
-
-    <form id="controls" class="pure-form pure-g">
-        <div class="form-select pure-u-1 pure-u-md-1-2">
-            <fieldset name="genres" id="genres" disabled>
-                <legend>Genres:</legend>
-                <div class="js-values">
-                    <p>loading...</p>
-                </div>
-            </fieldset>
-        </div>
-        <div class="form-select pure-u-1 pure-u-md-1-2">
-            <fieldset name="themes" id="themes" disabled>
-                <legend>Themes:</legend>
-                <div class="js-values">
-                    <p>loading...</p>
-                </div>
-            </fieldset>
-        </div>
-    </form>
 
     <!--<script src="../node_modules/chart.js/dist/Chart.bundle.js"></script>-->
     <!--<script src="../node_modules/bluebird/js/browser/bluebird.js"></script>-->
@@ -53,10 +32,10 @@
     <!--<script src="../.tmp/js/db.js"></script>-->
     <!--<script src="../.tmp/js/files.js"></script>-->
     <!--<script src="../.tmp/js/common.js"></script>-->
-    <!--<script src="../.tmp/js/main.js"></script>-->
+    <!--<script src="../.tmp/js/types.js"></script>-->
     <script src="js/bundle.min.js"></script>
     <script>
-        webEs6Main.default();
+        webEs6Types.default();
     </script>
 </body>
 </html>
