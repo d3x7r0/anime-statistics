@@ -113,6 +113,8 @@ function drawTypesRelativeChart(datasets) {
 
 function enableForm() {
     Common.setupDownloads();
+
+    populateTypes();
 }
 
 export default function run() {
@@ -120,7 +122,6 @@ export default function run() {
     $typesRelative = Common.printChart("typesRelative", "Types of shows per year (%)");
 
     Promise.all([
-        Common.init(),
-        populateTypes()
+        Common.init()
     ]).then(enableForm);
 }
