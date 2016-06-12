@@ -79,7 +79,7 @@ function printChart(id, title, width = 800, height = 600) {
         $download = document.createElement("a");
         $download.setAttribute("href", "#download");
         $download.setAttribute("class", "pure-button pure-button-primary js-download pure-button-disabled");
-        $download.setAttribute("download", encodeURIComponent(title) + ".png");
+        $download.setAttribute("download", title + ".png");
         $download.textContent = "Save to PNG";
     }
 
