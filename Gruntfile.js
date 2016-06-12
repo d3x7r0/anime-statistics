@@ -69,6 +69,7 @@ module.exports = function (grunt) {
         uglify: {
             dist: {
                 options: {
+                    drop_console: true,
                     sourceMap: true,
                     sourceMapIn: ".tmp/js/bundle.js.map"
                 },

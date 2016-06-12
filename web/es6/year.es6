@@ -19,9 +19,7 @@ function updateCharts() {
         "genres",
         active
     ).then(ds => {
-        if (console && console.debug) {
-            console.debug(ds);
-        }
+        console.debug(ds);
 
         printTop($topGenres, ds);
         drawTopGenreChart(ds);
@@ -31,9 +29,7 @@ function updateCharts() {
         "themes",
         active
     ).then(ds => {
-        if (console && console.debug) {
-            console.debug(ds);
-        }
+        console.debug(ds);
 
         printTop($topThemes, ds);
         drawTopThemesChart(ds);
@@ -42,9 +38,7 @@ function updateCharts() {
     updateStats(active);
 
     getTypes(active).then(ds => {
-        if (console && console.debug) {
-            console.debug(ds);
-        }
+        console.debug(ds);
 
         drawTypesChart(ds, parseInt(active.key, 10));
     });
@@ -205,7 +199,7 @@ function updateStats(entry) {
     var year = entry.key;
 
     var totals = Common.getTotals(),
-        episodeTotals = Common.getEpisodeTotals();
+        episodeTotals = Common.getEpisodeTotals()["tv"];
 
     $yearDetails.innerHTML = `<li><strong>Number of shows:</strong> ${totals[year]}</li>` +
         `<li><strong>Average Episode Count:</strong> ${episodeTotals[year]}</li>`;

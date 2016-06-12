@@ -10,29 +10,29 @@ var TOTALS, EPISODE_TOTALS;
 function fetchTotals() {
     return DB.fetchAllShows(START_YEAR, END_YEAR)
         .then(data => {
-            TOTALS = data.rows.reduce(function (memo, entry) {
+            TOTALS = data.rows.reduce((memo, entry) => {
                 memo[entry.key] = entry.value;
                 return memo;
             }, {});
 
-            if (console && console.debug) {
-                console.debug("Total show count", TOTALS);
-            }
+            console.debug("Total show count", TOTALS);
         });
 }
 
 function fetchEpisodeTotals() {
     return DB.fetchEpisodeData(START_YEAR, END_YEAR)
         .then(data => {
-            EPISODE_TOTALS = data.rows.reduce(function (memo, entry) {
-                var value = entry.value.sum / entry.value.count;
-                memo[entry.key] = Math.round(value);
+            EPISODE_TOTALS = data.rows.reduce((memo, entry) => {
+                let year = entry.key[0],
+                    type = entry.key[1];
+
+                memo[type] = memo[type] || {};
+                memo[type][year] = Math.round(entry.value.sum / entry.value.count);
+
                 return memo;
             }, {});
 
-            if (console && console.debug) {
-                console.debug("Total episode averages", EPISODE_TOTALS);
-            }
+            console.debug("Total episode averages", EPISODE_TOTALS);
         });
 }
 

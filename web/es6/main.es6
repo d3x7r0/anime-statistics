@@ -24,9 +24,7 @@ function updateCharts() {
     Promise.all(
         values.map(getData)
     ).then(ds => {
-        if (console && console.debug) {
-            console.debug("Genre data", ds);
-        }
+        console.debug("Genre data", ds);
 
         drawAbsoluteChart(ds);
         drawRelativeChart(ds);
@@ -34,11 +32,9 @@ function updateCharts() {
     });
 
     Promise.all(
-        values.map(getEpisodeData)
+        values.map(value => getEpisodeData(value))
     ).then(ds => {
-        if (console && console.debug) {
-            console.debug("Episode Count per Genre Data", ds);
-        }
+        console.debug("Episode Count per Genre Data", ds);
 
         drawEpisodesChart(ds);
     });
@@ -60,37 +56,14 @@ function getActive() {
 function getData(entry) {
     return Common.DB.getData(entry.key)
         .then(processEntries)
-        .then(data => ({
-            label: entry.key,
-            data: data,
-            fill: false,
-            backgroundColor: entry.color,
-            borderColor: Common.lightenDarkenColor(entry.color, -35)
-        }));
-}
-
-function getEpisodeData(entry) {
-    return Common.DB.getEpisodeData(entry.key)
-        .then(processEntries)
-        .then(calculateAverages)
-        .then(data => ({
-            label: entry.key,
-            data: data,
-            fill: false,
-            backgroundColor: entry.color,
-            borderColor: Common.lightenDarkenColor(entry.color, -35)
-        }));
-}
-
-function calculateAverages(data) {
-    return data.map(value => Math.round(value.sum / value.count || 0));
+        .then(buildEntry(entry));
 }
 
 function processEntries(entries) {
     var data = [].concat(entries && entries.rows || [])
-        .map(d => [d.key[1], d.value])
         .reduce((memo, entry) => {
-            memo[entry[0]] = entry[1];
+            let key = entry.key[1];
+            memo[key] = entry.value;
             return memo;
         }, {});
 
@@ -98,6 +71,62 @@ function processEntries(entries) {
         memo[idx] = data[label] || 0;
         return memo;
     }, []);
+}
+
+function getEpisodeData(entry) {
+    return Common.DB.getEpisodeData(entry.key)
+        .then(processEpisodeEntries)
+        .then(calculateEpisodeAverages)
+        .then(data => Object.keys(data).reduce((memo, key) => {
+            memo[key] = buildEntry(entry)(data[key]);
+            return memo;
+        }, {}));
+}
+
+function processEpisodeEntries(entries) {
+    var data = [].concat(entries && entries.rows || [])
+        .reduce((memo, entry) => {
+            let year = entry.key[2],
+                type = entry.key[1];
+
+            memo[type] = memo[type] || {};
+            memo[type][year] = entry.value;
+
+            return memo;
+        }, {});
+
+    return Object.keys(data)
+        .reduce((memo, key) => {
+            memo[key] = LABELS.reduce((memo, label, idx) => {
+                memo[idx] = data[key][label] || 0;
+                return memo;
+            }, []);
+
+            return memo;
+        }, {});
+}
+
+function calculateEpisodeAverages(data) {
+    return Object.keys(data).reduce((memo, key) => {
+        memo[key] = calculateAverages(data[key] || []);
+        return memo;
+    }, {});
+}
+
+function calculateAverages(data) {
+    return data.map(value => Math.round(value.sum / value.count || 0));
+}
+
+function buildEntry(entry) {
+    return function (data) {
+        return {
+            label: entry.key,
+            data: data,
+            fill: false,
+            backgroundColor: entry.color,
+            borderColor: Common.lightenDarkenColor(entry.color, -35)
+        };
+    }
 }
 
 var charts = {
@@ -140,7 +169,7 @@ function drawEpisodesChart(datasets) {
         charts["episodes"].destroy();
     }
 
-    var ds = datasets;
+    var ds = datasets.map(ds => ds["tv"]);
 
     var yAxis = {
         scaleLabel: {
@@ -152,7 +181,7 @@ function drawEpisodesChart(datasets) {
         }
     };
 
-    var totals = Common.getEpisodeTotals();
+    var totals = Common.getEpisodeTotals()["tv"];
 
     ds = [{
         label: "overall",
@@ -250,7 +279,6 @@ function drawChart($target, ds, yAxis) {
             labels: LABELS,
             datasets: ds.slice(0)
         },
-        responsive: true,
         options: {
             tooltips: {
                 mode: "label"
@@ -304,7 +332,7 @@ export default function run() {
     $absolute = Common.printChart("absolute", "# of shows per year");
     $relative = Common.printChart("relative", "% of shows per year");
     $relativeCumulative = Common.printChart("relative-cumulative", "% of shows per year (cumulative)");
-    $episodes = Common.printChart("episodes", "Avg. # of Eps per year");
+    $episodes = Common.printChart("episodes", "Avg. # of Eps per year (TV)");
 
     $genres = document.getElementById("genres");
     $themes = document.getElementById("themes");

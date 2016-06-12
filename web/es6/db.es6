@@ -15,45 +15,58 @@ function fetchDB(design, view, startKey, endKey) {
 
     let url = parts.join("&");
 
-    if (console && console.debug) {
-        console.debug("Fetching url: %s", url);
-    }
+    console.debug("Fetching url: %s", url);
 
     return fetch(url).then(res => res.json());
 }
 
-function fetchSingle(design, view, key) {
-    let k = JSON.stringify(key);
+function fetchRange(design, view, start, end) {
+    let a = JSON.stringify(start),
+        b = JSON.stringify(end || start);
 
-    return fetchDB(design, view, `[${k}]`, `[${k}, {}]`);
+    return fetchDB(design, view, `[${a}]`, `[${b}, {}]`);
 }
 
 function fetchAllShows(start, end) {
+    console.debug("Fetching all shows", start, end);
+
     return fetchDB("aggregated", "all", start, end);
 }
 
 function fetchEpisodeData(start, end) {
-    return fetchDB("aggregated", "episodes", start, end);
+    console.debug("Fetching episode data", start, end);
+
+    return fetchRange("aggregated", "episodesByType", start, end);
 }
 
 function getData(key) {
-    return fetchSingle("aggregated", "byKey", key);
+    console.debug("Fetching aggregated data", key);
+
+    return fetchRange("aggregated", "byKey", key);
 }
 
 function getEpisodeData(key) {
-    return fetchSingle("aggregated", "episodesByKey", key);
+    console.debug("Fetching episode data", key);
+
+    return fetchRange("aggregated", "episodesByKeyAndType", key);
 }
 
 function getGenreData(type) {
+    console.debug("Fetching genre data", type);
+
     return fetchDB(type, "all");
 }
 
 function getYearData(type, year) {
-    return fetchSingle(type, "byYear", parseInt(year, 10));
+    console.debug("Fetching year data", type, year);
+
+    return fetchRange(type, "byYear", parseInt(year, 10));
 }
 
 function getTypes(year) {
-    return fetchSingle("types", "byYear", parseInt(year, 10));
+    console.debug("Fetching types data", year);
+
+    return fetchRange("types", "byYear", parseInt(year, 10));
 }
 
 export default {
