@@ -157,8 +157,9 @@ function enableForm() {
 }
 
 export default function run() {
-    $topGenresChart = document.getElementById("topGenresChart");
-    $topThemesChart = document.getElementById("topThemesChart");
+    $topGenresChart = Common.printChart("topGenresChart", "Top 15 Genres");
+    $topThemesChart = Common.printChart("topThemesChart", "Top 15 Themes");
+
     $topGenres = document.getElementById("topGenres");
     $topThemes = document.getElementById("topThemes");
     $yearDetails = document.getElementById("yearDetails");

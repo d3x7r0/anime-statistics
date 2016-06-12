@@ -63,6 +63,36 @@ function onDownloadClick(e) {
     }
 }
 
+function printChart(id, title, width = 800, height = 600) {
+    var $target = document.getElementById(id);
+
+    let $title = document.createElement("h2");
+    $title.textContent = title;
+
+    let $canvas = document.createElement("canvas");
+    $canvas.setAttribute("class", "js-output");
+    $canvas.setAttribute("width", `${width}`);
+    $canvas.setAttribute("height", `${height}`);
+
+    let $download;
+    if ($target.className && $target.className.indexOf("js-downloadable") !== -1) {
+        $download = document.createElement("a");
+        $download.setAttribute("href", "#download");
+        $download.setAttribute("class", "pure-button pure-button-primary js-download pure-button-disabled");
+        $download.setAttribute("download", encodeURIComponent(title) + ".png");
+        $download.textContent = "Save to PNG";
+    }
+
+    $target.appendChild($title);
+    $target.appendChild($canvas);
+
+    if ($download) {
+        $target.appendChild($download);
+    }
+
+    return $target;
+}
+
 // src: https://css-tricks.com/snippets/javascript/lighten-darken-color/
 function lightenDarkenColor(col, amt) {
 
@@ -113,5 +143,6 @@ export default {
     },
     setupDownloads: setupDownloads,
     lightenDarkenColor: lightenDarkenColor,
+    printChart: printChart,
     init: init
 };

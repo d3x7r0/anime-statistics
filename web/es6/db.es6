@@ -1,21 +1,31 @@
 const DATABASE_LOCATION = "http://127.0.0.1:5984/ann/";
 
 function fetchDB(design, view, startKey, endKey) {
-    var url = [
+    var parts = [
         `${DATABASE_LOCATION}/_design/${design}/_view/${view}?group=true`
     ];
 
     if (startKey) {
-        url.push(`startkey=${startKey}`);
+        parts.push(`startkey=${startKey}`);
     }
 
     if (endKey) {
-        url.push(`endkey=${endKey}`);
+        parts.push(`endkey=${endKey}`);
     }
 
-    return fetch(
-        url.join("&")
-    ).then(res => res.json());
+    let url = parts.join("&");
+
+    if (console && console.debug) {
+        console.debug("Fetching url: %s", url);
+    }
+
+    return fetch(url).then(res => res.json());
+}
+
+function fetchSingle(design, view, key) {
+    let k = JSON.stringify(key);
+
+    return fetchDB(design, view, `[${k}]`, `[${k}, {}]`);
 }
 
 function fetchAllShows(start, end) {
@@ -27,11 +37,11 @@ function fetchEpisodeData(start, end) {
 }
 
 function getData(key) {
-    return fetchDB("aggregated", "byKey", `["${key}"]`, `["${key}", {}]`);
+    return fetchSingle("aggregated", "byKey", key);
 }
 
 function getEpisodeData(key) {
-    return fetchDB("aggregated", "episodesByKey", `["${key}"]`, `["${key}", {}]`);
+    return fetchSingle("aggregated", "episodesByKey", key);
 }
 
 function getGenreData(type) {
@@ -39,7 +49,7 @@ function getGenreData(type) {
 }
 
 function getYearData(type, year) {
-    return fetchDB(type, "byYear", `[${year}]`, `[${year}, {}]`);
+    return fetchSingle(type, "byYear", parseInt(year, 10));
 }
 
 export default {

@@ -301,10 +301,10 @@ function enableForm() {
 }
 
 export default function run() {
-    $absolute = document.getElementById("absolute");
-    $relative = document.getElementById("relative");
-    $relativeCumulative = document.getElementById("relative-cumulative");
-    $episodes = document.getElementById("episodes");
+    $absolute = Common.printChart("absolute", "# of shows per year");
+    $relative = Common.printChart("relative", "% of shows per year");
+    $relativeCumulative = Common.printChart("relative-cumulative", "% of shows per year (cumulative)");
+    $episodes = Common.printChart("episodes", "Avg. # of Eps per year");
 
     $genres = document.getElementById("genres");
     $themes = document.getElementById("themes");
