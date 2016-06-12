@@ -52,11 +52,16 @@ function getYearData(type, year) {
     return fetchSingle(type, "byYear", parseInt(year, 10));
 }
 
+function getTypes(year) {
+    return fetchSingle("types", "byYear", parseInt(year, 10));
+}
+
 export default {
     fetchAllShows: fetchAllShows,
     fetchEpisodeData: fetchEpisodeData,
     getData: getData,
     getEpisodeData: getEpisodeData,
     getGenreData: getGenreData,
-    getYearData: getYearData
+    getYearData: getYearData,
+    getTypes: getTypes
 };

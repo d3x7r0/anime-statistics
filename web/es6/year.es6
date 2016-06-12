@@ -2,9 +2,10 @@ import Chart from "chart.js";
 import randomColor from "randomcolor";
 import Common from "./common";
 
-const MAX_CHART_ENTRIES = 15;
+const MAX_GENRE_ENTRIES = 10;
+const MAX_THEME_ENTRIES = 20;
 
-var $topGenresChart, $topThemesChart, $topGenres, $topThemes, $yearDetails;
+var $topGenresChart, $topThemesChart, $typesChart, $topGenres, $topThemes, $yearDetails;
 var $year;
 
 function onDatasetChange() {
@@ -39,6 +40,14 @@ function updateCharts() {
     });
 
     updateStats(active);
+
+    getTypes(active).then(ds => {
+        if (console && console.debug) {
+            console.debug(ds);
+        }
+
+        drawTypesChart(ds, parseInt(active.key, 10));
+    });
 }
 
 function getActive() {
@@ -55,6 +64,11 @@ function getActive() {
 
 function getData(type, entry) {
     return Common.DB.getYearData(type, entry.key)
+        .then(processEntries);
+}
+
+function getTypes(entry) {
+    return Common.DB.getTypes(entry.key)
         .then(processEntries);
 }
 
@@ -83,7 +97,8 @@ function printTop($target, dataset) {
 
 var charts = {
     "topGenre": null,
-    "topTheme": null
+    "topTheme": null,
+    "types": null
 };
 
 function drawTopGenreChart(dataset) {
@@ -91,7 +106,11 @@ function drawTopGenreChart(dataset) {
         charts["topGenre"].destroy();
     }
 
-    charts["topGenre"] = drawChart($topGenresChart, dataset);
+    charts["topGenre"] = drawChart(
+        "pie",
+        $topGenresChart,
+        limit(dataset, MAX_GENRE_ENTRIES)
+    );
 }
 
 function drawTopThemesChart(dataset) {
@@ -99,35 +118,87 @@ function drawTopThemesChart(dataset) {
         charts["topTheme"].destroy();
     }
 
-    charts["topTheme"] = drawChart($topThemesChart, dataset);
+    charts["topTheme"] = drawChart(
+        "pie",
+        $topThemesChart,
+        dataset.slice(0, MAX_THEME_ENTRIES)
+    );
 }
 
-function drawChart($target, dataset) {
-    var $output = $target.querySelectorAll(".js-output");
+function drawTypesChart(dataset, year) {
+    if (charts["types"]) {
+        charts["types"].destroy();
+    }
 
-    var data = dataset
-        .slice(0, MAX_CHART_ENTRIES)
-        .reduce((memo, entry) => {
-            memo.labels.push(entry.label);
+    dataset = dataset.map(entry => {
+        let res = Object.assign({}, entry);
+        let v = (entry.value / Common.getTotals()[year] * 100);
+        v = v.toFixed(2);
+        res.value = parseInt(v, 10);
+        return res;
+    });
 
-            memo.datasets[0].data.push(entry.value);
-            memo.datasets[0].backgroundColor.push(entry.backgroundColor);
-            memo.datasets[0].hoverBackgroundColor.push(entry.hoverBackgroundColor);
-
-            return memo;
-        }, {
-            labels: [],
-            datasets: [{
-                data: [],
-                backgroundColor: [],
-                hoverBackgroundColor: []
+    charts["types"] = drawChart("horizontalBar", $typesChart, dataset, "Types", {
+        scales: {
+            yAxes: [{
+                stacked: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: "percent"
+                },
+                ticks: {
+                    max: 100,
+                    beginAtZero: true
+                }
             }]
-        });
+        }
+    });
+}
+
+function drawChart(type, $target, dataset, label, options) {
+    let $output = $target.querySelectorAll(".js-output");
+
+    let data = dataset.reduce((memo, entry) => {
+        memo.labels.push(entry.label);
+
+        memo.datasets[0].data.push(entry.value);
+        memo.datasets[0].backgroundColor.push(entry.backgroundColor);
+        memo.datasets[0].hoverBackgroundColor.push(entry.hoverBackgroundColor);
+
+        return memo;
+    }, {
+        labels: [],
+        datasets: [{
+            label: label,
+            data: [],
+            backgroundColor: [],
+            hoverBackgroundColor: []
+        }]
+    });
 
     return new Chart($output, {
-        type: "pie",
-        data: data
+        type: type,
+        data: data,
+        options: options
     });
+}
+
+function limit(dataset, limit) {
+    let data = dataset.slice(0, limit);
+    let rest = dataset.slice(limit);
+
+    rest = rest.reduce((memo, entry) => ({
+        label: "Others",
+        value: memo.value + entry.value,
+        backgroundColor: memo.backgroundColor || entry.backgroundColor,
+        hoverBackgroundColor: memo.hoverBackgroundColor || entry.hoverBackgroundColor,
+    }), {
+        value: 0
+    });
+
+    data.push(rest);
+
+    return data;
 }
 
 function updateStats(entry) {
@@ -150,15 +221,16 @@ function enableForm() {
     $year.innerHTML = Object.keys(Common.getTotals())
         .map(printOption)
         .join("\n");
-    $year.value = Common.START_YEAR;
+    $year.value = Common.END_YEAR;
     $year.removeAttribute("disabled");
 
     updateCharts();
 }
 
 export default function run() {
-    $topGenresChart = Common.printChart("topGenresChart", "Top 15 Genres");
-    $topThemesChart = Common.printChart("topThemesChart", "Top 15 Themes");
+    $topGenresChart = Common.printChart("topGenresChart", `Top ${MAX_GENRE_ENTRIES} Genres`);
+    $topThemesChart = Common.printChart("topThemesChart", `Top ${MAX_THEME_ENTRIES} Themes`);
+    $typesChart = Common.printChart("typesChart", "Type of shows (%)");
 
     $topGenres = document.getElementById("topGenres");
     $topThemes = document.getElementById("topThemes");

@@ -9,6 +9,10 @@ function fetchFile(file) {
         );
     }
 
+    if (console && console.debug) {
+        console.debug('Fetching file "%s"', file);
+    }
+
     return fetch(DATA_FOLDER + file)
         .then(function (res) {
             return res.json();
@@ -64,11 +68,16 @@ function getYearData(type, year) {
     return getFilteredDataFile("data_" + type + ".json", parseInt(year, 10));
 }
 
+function getTypes(year) {
+    return getFilteredDataFile("types.json", parseInt(year, 10));
+}
+
 export default {
     fetchAllShows: fetchAllShows,
     fetchEpisodeData: fetchEpisodeData,
     getData: getData,
     getEpisodeData: getEpisodeData,
     getGenreData: getGenreData,
-    getYearData: getYearData
+    getYearData: getYearData,
+    getTypes: getTypes
 };
