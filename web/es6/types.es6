@@ -1,13 +1,6 @@
 import Promise from "bluebird";
-import Chart from "chart.js";
 import randomColor from "randomcolor";
 import Common from "./common";
-
-var LABELS = [];
-
-for (var i = Common.START_YEAR; i <= Common.END_YEAR; i++) {
-    LABELS.push(i);
-}
 
 var $types, $typesRelative;
 
@@ -31,7 +24,7 @@ function getTypesData() {
             });
 
             return types.map((type, idx) => {
-                let fn = buildEntry({
+                let fn = Common.buildEntry({
                     key: type,
                     color: colors[idx]
                 });
@@ -53,33 +46,7 @@ function processTypes(entries) {
             return memo;
         }, {});
 
-    return reduceToYears(data);
-}
-
-function reduceToYears(data) {
-    return Object.keys(data).reduce((memo, key) => {
-        memo[key] = mapToYears(data[key]);
-        return memo;
-    }, {});
-}
-
-function mapToYears(data) {
-    return LABELS.reduce((memo, label, idx) => {
-        memo[idx] = data[label] || 0;
-        return memo;
-    }, []);
-}
-
-function buildEntry(entry) {
-    return function (data) {
-        return {
-            label: entry.key,
-            data: data,
-            fill: false,
-            backgroundColor: entry.color,
-            borderColor: Common.lightenDarkenColor(entry.color, -35)
-        };
-    };
+    return Common.reduceToActiveYears(data);
 }
 
 var charts = {
@@ -103,7 +70,7 @@ function drawTypesChart(datasets) {
         }
     };
 
-    charts["types"] = drawChart($types, datasets, yAxis);
+    charts["types"] = Common.drawLineChart($types, datasets, yAxis);
 }
 
 function drawTypesRelativeChart(datasets) {
@@ -142,41 +109,7 @@ function drawTypesRelativeChart(datasets) {
         return res;
     });
 
-    charts["types-relative"] = drawChart($typesRelative, ds, yAxis);
-}
-
-function drawChart($target, ds, yAxis) {
-    var $output = $target.querySelectorAll(".js-output");
-
-    if (!$output.length) {
-        console.warn("Missing canvas", $target);
-        return;
-    }
-
-    return new Chart($output[0], {
-        type: "line",
-        data: {
-            labels: LABELS,
-            datasets: ds.slice(0)
-        },
-        options: {
-            tooltips: {
-                mode: "label"
-            },
-            hover: {
-                mode: "label"
-            },
-            scales: {
-                xAxes: [{
-                    scaleLabel: {
-                        display: true,
-                        labelString: "year"
-                    }
-                }],
-                yAxes: [yAxis]
-            }
-        }
-    });
+    charts["types-relative"] = Common.drawLineChart($typesRelative, ds, yAxis);
 }
 
 function enableForm() {

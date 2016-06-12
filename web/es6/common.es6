@@ -1,11 +1,17 @@
 // import DB from "./db";
 import DB from "./files";
 import Promise from "bluebird";
+import Chart from "chart.js";
 
 const START_YEAR = 1975;
 const END_YEAR = 2015;
 
 var TOTALS, EPISODE_TOTALS;
+var ACTIVE_YEARS = [];
+
+for (let i = START_YEAR; i <= END_YEAR; i++) {
+    ACTIVE_YEARS.push(i);
+}
 
 function fetchTotals() {
     return DB.fetchAllShows(START_YEAR, END_YEAR)
@@ -36,6 +42,7 @@ function fetchEpisodeTotals() {
         });
 }
 
+// DOM
 function setupDownloads() {
     var $entries = document.querySelectorAll(".js-downloadable");
 
@@ -93,6 +100,68 @@ function printChart(id, title, width = 800, height = 600) {
     return $target;
 }
 
+// Charts
+function drawLineChart($target, ds, yAxis) {
+    var $output = $target.querySelectorAll(".js-output");
+
+    if (!$output.length) {
+        console.warn("Missing canvas", $target);
+        return;
+    }
+
+    return new Chart($output[0], {
+        type: "line",
+        data: {
+            labels: ACTIVE_YEARS,
+            datasets: ds.slice(0)
+        },
+        options: {
+            tooltips: {
+                mode: "label"
+            },
+            hover: {
+                mode: "label"
+            },
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "year"
+                    }
+                }],
+                yAxes: [yAxis]
+            }
+        }
+    });
+}
+
+// Helpers
+function reduceToActiveYears(data) {
+    return Object.keys(data).reduce((memo, key) => {
+        memo[key] = mapToActiveYears(data[key]);
+        return memo;
+    }, {});
+}
+
+function mapToActiveYears(data) {
+    return ACTIVE_YEARS.reduce((memo, label, idx) => {
+        memo[idx] = data[label] || 0;
+        return memo;
+    }, []);
+}
+
+function buildEntry(entry) {
+    return function (data) {
+        return {
+            label: entry.key,
+            data: data,
+            fill: false,
+            backgroundColor: entry.color,
+            borderColor: lightenDarkenColor(entry.color, -35)
+        };
+    };
+}
+
 // src: https://css-tricks.com/snippets/javascript/lighten-darken-color/
 function lightenDarkenColor(col, amt) {
 
@@ -141,7 +210,11 @@ export default {
         return EPISODE_TOTALS;
     },
     setupDownloads: setupDownloads,
+    reduceToActiveYears: reduceToActiveYears,
+    mapToActiveYears: mapToActiveYears,
+    buildEntry: buildEntry,
     lightenDarkenColor: lightenDarkenColor,
     printChart: printChart,
+    drawLineChart: drawLineChart,
     init: init
 };

@@ -1,15 +1,8 @@
 import Promise from "bluebird";
-import Chart from "chart.js";
 import randomColor from "randomcolor";
 import Common from "./common";
 
 const MIN_COUNT = 25;
-
-var LABELS = [];
-
-for (var i = Common.START_YEAR; i <= Common.END_YEAR; i++) {
-    LABELS.push(i);
-}
 
 var $absolute, $relative, $relativeCumulative, $episodes;
 var $genres, $themes;
@@ -56,7 +49,7 @@ function getActive() {
 function getData(entry) {
     return Common.DB.getData(entry.key)
         .then(data => processEntries(data && data.rows))
-        .then(buildEntry(entry));
+        .then(Common.buildEntry(entry));
 }
 
 function getEpisodeData(entry) {
@@ -64,7 +57,7 @@ function getEpisodeData(entry) {
         .then(data => processEpisodeEntries(data && data.rows))
         .then(calculateEpisodeAverages)
         .then(data => Object.keys(data).reduce((memo, key) => {
-            memo[key] = buildEntry(entry)(data[key]);
+            memo[key] = Common.buildEntry(entry)(data[key]);
             return memo;
         }, {}));
 }
@@ -77,7 +70,7 @@ function processEntries(entries) {
             return memo;
         }, {});
 
-    return mapToYears(data);
+    return Common.mapToActiveYears(data);
 }
 
 function processEpisodeEntries(entries) {
@@ -92,21 +85,7 @@ function processEpisodeEntries(entries) {
             return memo;
         }, {});
 
-    return reduceToYears(data);
-}
-
-function reduceToYears(data) {
-    return Object.keys(data).reduce((memo, key) => {
-        memo[key] = mapToYears(data[key]);
-        return memo;
-    }, {});
-}
-
-function mapToYears(data) {
-    return LABELS.reduce((memo, label, idx) => {
-        memo[idx] = data[label] || 0;
-        return memo;
-    }, []);
+    return Common.reduceToActiveYears(data);
 }
 
 function calculateEpisodeAverages(data) {
@@ -117,19 +96,7 @@ function calculateEpisodeAverages(data) {
 }
 
 function calculateAverages(data) {
-    return data.map(value => Math.round(value.sum / value.count || 0));
-}
-
-function buildEntry(entry) {
-    return function (data) {
-        return {
-            label: entry.key,
-            data: data,
-            fill: false,
-            backgroundColor: entry.color,
-            borderColor: Common.lightenDarkenColor(entry.color, -35)
-        };
-    };
+    return data.map(value => Math.round(value["sum"] / value["count"] || 0));
 }
 
 var charts = {
@@ -164,7 +131,7 @@ function drawAbsoluteChart(datasets) {
         fill: false
     }].concat(ds || []);
 
-    charts["absolute"] = drawLineChart($absolute, ds, yAxis);
+    charts["absolute"] = Common.drawLineChart($absolute, ds, yAxis);
 }
 
 function drawRelativeChart(datasets) {
@@ -200,7 +167,7 @@ function drawRelativeChart(datasets) {
         return res;
     });
 
-    charts["relative"] = drawLineChart($relative, ds, yAxis);
+    charts["relative"] = Common.drawLineChart($relative, ds, yAxis);
 }
 
 function drawCumulativeRelativeChart(datasets) {
@@ -237,7 +204,7 @@ function drawCumulativeRelativeChart(datasets) {
         return res;
     });
 
-    charts["relative-cumulative"] = drawLineChart($relativeCumulative, ds, yAxis);
+    charts["relative-cumulative"] = Common.drawLineChart($relativeCumulative, ds, yAxis);
 }
 
 function drawEpisodesChart(datasets) {
@@ -265,41 +232,7 @@ function drawEpisodesChart(datasets) {
         fill: false
     }].concat(ds || []);
 
-    charts["episodes"] = drawLineChart($episodes, ds, yAxis);
-}
-
-function drawLineChart($target, ds, yAxis) {
-    var $output = $target.querySelectorAll(".js-output");
-
-    if (!$output.length) {
-        console.warn("Missing canvas", $target);
-        return;
-    }
-
-    return new Chart($output[0], {
-        type: "line",
-        data: {
-            labels: LABELS,
-            datasets: ds.slice(0)
-        },
-        options: {
-            tooltips: {
-                mode: "label"
-            },
-            hover: {
-                mode: "label"
-            },
-            scales: {
-                xAxes: [{
-                    scaleLabel: {
-                        display: true,
-                        labelString: "year"
-                    }
-                }],
-                yAxes: [yAxis]
-            }
-        }
-    });
+    charts["episodes"] = Common.drawLineChart($episodes, ds, yAxis);
 }
 
 function populateAll(type, $target) {
