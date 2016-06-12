@@ -1,6 +1,7 @@
 // import DB from "./db";
 import DB from "./files";
 import Promise from "bluebird";
+import randomColor from "randomcolor";
 import Chart from "chart.js";
 
 const START_YEAR = 1975;
@@ -162,6 +163,15 @@ function buildEntry(entry) {
     };
 }
 
+const SKIP_VALUE = 4;
+
+function generateColors(count, seed, offset = 0) {
+    return randomColor({
+        count: count * SKIP_VALUE,
+        seed: seed
+    }).filter((entry, idx) => (idx-offset) % SKIP_VALUE === 0);
+}
+
 // src: https://css-tricks.com/snippets/javascript/lighten-darken-color/
 function lightenDarkenColor(col, amt) {
 
@@ -213,6 +223,7 @@ export default {
     reduceToActiveYears: reduceToActiveYears,
     mapToActiveYears: mapToActiveYears,
     buildEntry: buildEntry,
+    generateColors: generateColors,
     lightenDarkenColor: lightenDarkenColor,
     printChart: printChart,
     drawLineChart: drawLineChart,

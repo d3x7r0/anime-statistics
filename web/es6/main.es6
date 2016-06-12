@@ -1,5 +1,4 @@
 import Promise from "bluebird";
-import randomColor from "randomcolor";
 import Common from "./common";
 
 const MIN_COUNT = 25;
@@ -12,7 +11,7 @@ function onDatasetChange() {
 }
 
 function updateCharts() {
-    var values = getActive();
+    let values = getActive();
 
     Promise.all(
         values.map(getData)
@@ -34,7 +33,7 @@ function updateCharts() {
 }
 
 function getActive() {
-    var $g = $genres.querySelectorAll(":checked"),
+    let $g = $genres.querySelectorAll(":checked"),
         $t = $themes.querySelectorAll(":checked");
 
     $g = Array.prototype.slice.call($g);
@@ -99,7 +98,7 @@ function calculateAverages(data) {
     return data.map(value => Math.round(value["sum"] / value["count"] || 0));
 }
 
-var charts = {
+var CHARTS = {
     "absolute": null,
     "relative": null,
     "relative-cumulative": null,
@@ -107,13 +106,13 @@ var charts = {
 };
 
 function drawAbsoluteChart(datasets) {
-    if (charts["absolute"]) {
-        charts["absolute"].destroy();
+    if (CHARTS["absolute"]) {
+        CHARTS["absolute"].destroy();
     }
 
-    var ds = datasets;
+    let ds = datasets;
 
-    var yAxis = {
+    let yAxis = {
         scaleLabel: {
             display: true,
             labelString: "count"
@@ -123,7 +122,7 @@ function drawAbsoluteChart(datasets) {
         }
     };
 
-    var totals = Common.getTotals();
+    let totals = Common.getTotals();
 
     ds = [{
         label: "total",
@@ -131,15 +130,15 @@ function drawAbsoluteChart(datasets) {
         fill: false
     }].concat(ds || []);
 
-    charts["absolute"] = Common.drawLineChart($absolute, ds, yAxis);
+    CHARTS["absolute"] = Common.drawLineChart($absolute, ds, yAxis);
 }
 
 function drawRelativeChart(datasets) {
-    if (charts["relative"]) {
-        charts["relative"].destroy();
+    if (CHARTS["relative"]) {
+        CHARTS["relative"].destroy();
     }
 
-    var yAxis = {
+    let yAxis = {
         scaleLabel: {
             display: true,
             labelString: "percent"
@@ -151,15 +150,15 @@ function drawRelativeChart(datasets) {
         }
     };
 
-    var totals = Common.getTotals();
+    let totals = Common.getTotals();
 
-    var ds = datasets.map(ds => {
-        var years = Object.keys(totals);
-        var res = Object.assign({}, ds);
+    let ds = datasets.map(ds => {
+        let years = Object.keys(totals);
+        let res = Object.assign({}, ds);
 
         res.data = res.data.map((value, idx) => {
-            var year = years[idx];
-            var v = (value / totals[year] * 100);
+            let year = years[idx];
+            let v = (value / totals[year] * 100);
             v = v.toFixed(2);
             return parseInt(v, 10);
         });
@@ -167,15 +166,15 @@ function drawRelativeChart(datasets) {
         return res;
     });
 
-    charts["relative"] = Common.drawLineChart($relative, ds, yAxis);
+    CHARTS["relative"] = Common.drawLineChart($relative, ds, yAxis);
 }
 
 function drawCumulativeRelativeChart(datasets) {
-    if (charts["relative-cumulative"]) {
-        charts["relative-cumulative"].destroy();
+    if (CHARTS["relative-cumulative"]) {
+        CHARTS["relative-cumulative"].destroy();
     }
 
-    var yAxis = {
+    let yAxis = {
         stacked: true,
         scaleLabel: {
             display: true,
@@ -186,17 +185,17 @@ function drawCumulativeRelativeChart(datasets) {
         }
     };
 
-    var totals = Common.getTotals();
+    let totals = Common.getTotals();
 
-    var ds = datasets.map(ds => {
-        var years = Object.keys(totals);
-        var res = Object.assign({}, ds);
+    let ds = datasets.map(ds => {
+        let years = Object.keys(totals);
+        let res = Object.assign({}, ds);
 
         res.fill = true;
 
         res.data = res.data.map((value, idx) => {
-            var year = years[idx];
-            var v = (value / totals[year] * 100);
+            let year = years[idx];
+            let v = (value / totals[year] * 100);
             v = v.toFixed(2);
             return parseInt(v, 10);
         });
@@ -204,17 +203,17 @@ function drawCumulativeRelativeChart(datasets) {
         return res;
     });
 
-    charts["relative-cumulative"] = Common.drawLineChart($relativeCumulative, ds, yAxis);
+    CHARTS["relative-cumulative"] = Common.drawLineChart($relativeCumulative, ds, yAxis);
 }
 
 function drawEpisodesChart(datasets) {
-    if (charts["episodes"]) {
-        charts["episodes"].destroy();
+    if (CHARTS["episodes"]) {
+        CHARTS["episodes"].destroy();
     }
 
-    var ds = datasets.map(ds => ds["tv"]);
+    let ds = datasets.map(ds => ds["tv"]);
 
-    var yAxis = {
+    let yAxis = {
         scaleLabel: {
             display: true,
             labelString: "avg. episode count"
@@ -224,7 +223,7 @@ function drawEpisodesChart(datasets) {
         }
     };
 
-    var totals = Common.getEpisodeTotals()["tv"];
+    let totals = Common.getEpisodeTotals()["tv"];
 
     ds = [{
         label: "overall",
@@ -232,15 +231,15 @@ function drawEpisodesChart(datasets) {
         fill: false
     }].concat(ds || []);
 
-    charts["episodes"] = Common.drawLineChart($episodes, ds, yAxis);
+    CHARTS["episodes"] = Common.drawLineChart($episodes, ds, yAxis);
 }
 
 function populateAll(type, $target) {
     return Common.DB.getGenreData(type)
         .then(function (data) {
-            var entries = data.rows.filter(d => d.value >= MIN_COUNT);
+            let entries = data.rows.filter(d => d.value >= MIN_COUNT);
 
-            var colors = randomColor({count: entries.length});
+            let colors = Common.generateColors(entries.length, "genre-data-" + type);
 
             entries = entries.map((entry, idx) => {
                 entry.color = colors[idx];

@@ -1,5 +1,4 @@
 import Chart from "chart.js";
-import randomColor from "randomcolor";
 import Common from "./common";
 
 const MAX_GENRE_ENTRIES = 10;
@@ -13,7 +12,7 @@ function onDatasetChange() {
 }
 
 function updateCharts() {
-    var active = getActive();
+    let active = getActive();
 
     getData(
         "genres",
@@ -45,7 +44,7 @@ function updateCharts() {
 }
 
 function getActive() {
-    var $el = $year.querySelectorAll(`[value="${$year.value}"]`)[0];
+    let $el = $year.querySelectorAll(`[value="${$year.value}"]`)[0];
 
     if (!$el) {
         return;
@@ -58,29 +57,30 @@ function getActive() {
 
 function getData(type, entry) {
     return Common.DB.getYearData(type, entry.key)
-        .then(processEntries);
+        .then(processEntries(type + "-year-data"));
 }
 
 function getTypes(entry) {
     return Common.DB.getTypes(entry.key)
-        .then(processEntries);
+        .then(processEntries("types-year-data"));
 }
 
-function processEntries(entries) {
-    var rows = [].concat(entries.rows || []);
+function processEntries(colorSeed) {
 
-    var color = randomColor({
-        count: rows.length
-    });
+    return function (entries) {
+        let rows = [].concat(entries.rows || []);
 
-    return rows
-        .sort((a, b) => b.value - a.value)
-        .map((entry, idx) => ({
-            label: entry.key[1],
-            value: entry.value,
-            backgroundColor: color[idx],
-            hoverBackgroundColor: Common.lightenDarkenColor(color[idx], -35)
-        }));
+        let color = Common.generateColors(rows.length, colorSeed);
+
+        return rows
+            .sort((a, b) => b.value - a.value)
+            .map((entry, idx) => ({
+                label: entry.key[1],
+                value: entry.value,
+                backgroundColor: color[idx],
+                hoverBackgroundColor: Common.lightenDarkenColor(color[idx], -35)
+            }));
+    };
 }
 
 function printTop($target, dataset) {
@@ -89,18 +89,18 @@ function printTop($target, dataset) {
         .innerHTML = dataset.map(entry => `<li>${entry.label} - ${entry.value} shows</li>`).join("\n");
 }
 
-var charts = {
+var CHARTS = {
     "topGenre": null,
     "topTheme": null,
     "types": null
 };
 
 function drawTopGenreChart(dataset) {
-    if (charts["topGenre"]) {
-        charts["topGenre"].destroy();
+    if (CHARTS["topGenre"]) {
+        CHARTS["topGenre"].destroy();
     }
 
-    charts["topGenre"] = drawChart(
+    CHARTS["topGenre"] = drawChart(
         "pie",
         $topGenresChart,
         limit(dataset, MAX_GENRE_ENTRIES)
@@ -108,11 +108,11 @@ function drawTopGenreChart(dataset) {
 }
 
 function drawTopThemesChart(dataset) {
-    if (charts["topTheme"]) {
-        charts["topTheme"].destroy();
+    if (CHARTS["topTheme"]) {
+        CHARTS["topTheme"].destroy();
     }
 
-    charts["topTheme"] = drawChart(
+    CHARTS["topTheme"] = drawChart(
         "pie",
         $topThemesChart,
         dataset.slice(0, MAX_THEME_ENTRIES)
@@ -120,8 +120,8 @@ function drawTopThemesChart(dataset) {
 }
 
 function drawTypesChart(dataset, year) {
-    if (charts["types"]) {
-        charts["types"].destroy();
+    if (CHARTS["types"]) {
+        CHARTS["types"].destroy();
     }
 
     dataset = dataset.map(entry => {
@@ -132,7 +132,7 @@ function drawTypesChart(dataset, year) {
         return res;
     });
 
-    charts["types"] = drawChart("horizontalBar", $typesChart, dataset, "Types", {
+    CHARTS["types"] = drawChart("horizontalBar", $typesChart, dataset, "Types", {
         scales: {
             yAxes: [{
                 stacked: true,
@@ -196,9 +196,9 @@ function limit(dataset, limit) {
 }
 
 function updateStats(entry) {
-    var year = entry.key;
+    let year = entry.key;
 
-    var totals = Common.getTotals(),
+    let totals = Common.getTotals(),
         episodeTotals = Common.getEpisodeTotals()["tv"];
 
     $yearDetails.innerHTML = `<li><strong>Number of shows:</strong> ${totals[year]}</li>` +

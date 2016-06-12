@@ -1,5 +1,4 @@
 import Promise from "bluebird";
-import randomColor from "randomcolor";
 import Common from "./common";
 
 var $types, $typesRelative;
@@ -19,9 +18,7 @@ function getTypesData() {
         .then(data => {
             let types = Object.keys(data);
 
-            let colors = randomColor({
-                count: types.length
-            });
+            let colors = Common.generateColors(types.length, "show-type-year-data");
 
             return types.map((type, idx) => {
                 let fn = Common.buildEntry({
@@ -49,17 +46,17 @@ function processTypes(entries) {
     return Common.reduceToActiveYears(data);
 }
 
-var charts = {
+var CHARTS = {
     "types": null,
     "types-relative": null
 };
 
 function drawTypesChart(datasets) {
-    if (charts["types"]) {
-        charts["types"].destroy();
+    if (CHARTS["types"]) {
+        CHARTS["types"].destroy();
     }
 
-    var yAxis = {
+    let yAxis = {
         scaleLabel: {
             display: true,
             labelString: "count"
@@ -69,15 +66,15 @@ function drawTypesChart(datasets) {
         }
     };
 
-    charts["types"] = Common.drawLineChart($types, datasets, yAxis);
+    CHARTS["types"] = Common.drawLineChart($types, datasets, yAxis);
 }
 
 function drawTypesRelativeChart(datasets) {
-    if (charts["types-relative"]) {
-        charts["types-relative"].destroy();
+    if (CHARTS["types-relative"]) {
+        CHARTS["types-relative"].destroy();
     }
 
-    var yAxis = {
+    let yAxis = {
         stacked: true,
         scaleLabel: {
             display: true,
@@ -90,17 +87,17 @@ function drawTypesRelativeChart(datasets) {
         }
     };
 
-    var totals = Common.getTotals();
+    let totals = Common.getTotals();
 
-    var ds = datasets.map(ds => {
-        var years = Object.keys(totals);
-        var res = Object.assign({}, ds);
+    let ds = datasets.map(ds => {
+        let years = Object.keys(totals);
+        let res = Object.assign({}, ds);
 
         res.fill = true;
 
         res.data = res.data.map((value, idx) => {
-            var year = years[idx];
-            var v = (value / totals[year] * 100);
+            let year = years[idx];
+            let v = (value / totals[year] * 100);
             v = v.toFixed(2);
             return parseInt(v, 10);
         });
@@ -108,7 +105,7 @@ function drawTypesRelativeChart(datasets) {
         return res;
     });
 
-    charts["types-relative"] = Common.drawLineChart($typesRelative, ds, yAxis);
+    CHARTS["types-relative"] = Common.drawLineChart($typesRelative, ds, yAxis);
 }
 
 function enableForm() {
