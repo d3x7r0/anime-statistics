@@ -33,6 +33,7 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-cssmin": "^1.0.1",
     "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
     "grunt-exec": "^0.4.7",
     "load-grunt-tasks": "^3.5.0",
     "purecss": "^0.6.0",

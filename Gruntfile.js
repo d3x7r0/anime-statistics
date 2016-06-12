@@ -23,12 +23,14 @@ module.exports = function (grunt) {
 
         cssmin: {
             dist: {
-                src: [
-                    "node_modules/purecss/build/pure.css",
-                    "node_modules/purecss/build/grids-responsive.css",
-                    "web/css/main.css"
-                ],
-                dest: "target/css/bundle.min.css"
+                files: [{
+                    src: [
+                        "node_modules/purecss/build/pure.css",
+                        "node_modules/purecss/build/grids-responsive.css",
+                        "web/css/main.css"
+                    ],
+                    dest: "target/css/bundle.min.css"
+                }]
             }
         },
 
@@ -87,11 +89,35 @@ module.exports = function (grunt) {
                     dest: "target/"
                 }]
             }
+        },
+
+        watch: {
+            scripts: {
+                files: [
+                    "web/es6/**",
+                    "node_modules/**/package.json"
+                ],
+                tasks: ["scripts"]
+            },
+            styles: {
+                files: [
+                    "web/css/**"
+                ],
+                tasks: ["styles"]
+            },
+            static: {
+                files: [
+                    "**.html",
+                    "data/**.json"
+                ],
+                tasks: ["copy"]
+            }
         }
     });
 
     // Build tasks
     grunt.registerTask("build", ["styles", "scripts", "copy"]);
+    grunt.registerTask("debug", ["build", "watch"]);
 
     grunt.registerTask("default", ["clean", "build"]);
 
