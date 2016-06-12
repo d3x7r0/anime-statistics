@@ -60,7 +60,6 @@ function drawTypesChart(datasets) {
     }
 
     var yAxis = {
-        stacked: true,
         scaleLabel: {
             display: true,
             labelString: "count"
