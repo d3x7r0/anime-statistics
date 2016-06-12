@@ -63,7 +63,7 @@ function drawTypesChart(datasets) {
         stacked: true,
         scaleLabel: {
             display: true,
-            labelString: "percent"
+            labelString: "count"
         },
         ticks: {
             beginAtZero: true
