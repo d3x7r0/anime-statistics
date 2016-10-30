@@ -6,7 +6,7 @@
   "author": "Luís Nabais <dextro@nonsensebb.com>",
   "license": "MIT",
   "engines": {
-    "node": "~6.2.0"
+    "node": ">= 6.9.x"
   },
   "scripts": {
     "build": "./node_modules/.bin/grunt"
@@ -18,6 +18,7 @@
     "npm": "^3.9.3",
     "rc": "^1.1.6",
     "slug": "^0.9.1",
+    "sukurapa": "^0.0.3",
     "xml2js": "^0.4.16"
   },
   "devDependencies": {
@@ -85,14 +86,7 @@
       ],
       "no-console": 0,
       "no-unused-vars": 1,
-      "quotes": [
-        "warn",
-        "double",
-        {
-          "avoidEscape": true,
-          "allowTemplateLiterals": true
-        }
-      ]
+      "quotes": 0
     }
   }
 }

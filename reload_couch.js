@@ -1,3 +1,5 @@
-var couch = require("./lib/writers/couch");
+let CONFIG = require('./config');
 
-couch.reloadViews();
+let Couch = require('./lib/couch');
+
+Couch.reloadViews(CONFIG.writer.options);

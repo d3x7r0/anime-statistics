@@ -3,3 +3,4 @@ stats.csv
 target
 .tmp
 web/data
+yarn.lock
