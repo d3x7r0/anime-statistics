@@ -5,7 +5,7 @@ import randomColor from "randomcolor";
 import Chart from "chart.js";
 
 const START_YEAR = 1975;
-const END_YEAR = 2015;
+const END_YEAR = 2016;
 
 var TOTALS, EPISODE_TOTALS;
 var ACTIVE_YEARS = [];
