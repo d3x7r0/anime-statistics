@@ -15,7 +15,7 @@
     "bluebird": "^3.4.0",
     "nano": "^6.2.0",
     "node-fetch": "^1.5.3",
-    "npm": "^3.9.3",
+    "npm": "^5.6.0",
     "rc": "^1.1.6",
     "slug": "^0.9.1",
     "sukurapa": "^0.0.3",
@@ -32,14 +32,14 @@
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^1.0.1",
-    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-cssmin": "^2.2.1",
+    "grunt-contrib-uglify": "^3.3.0",
     "grunt-contrib-watch": "^1.0.0",
-    "grunt-exec": "^0.4.7",
+    "grunt-exec": "^3.0.0",
     "load-grunt-tasks": "^3.5.0",
-    "purecss": "^0.6.0",
-    "randomcolor": "^0.4.4",
-    "whatwg-fetch": "^1.0.0"
+    "purecss": "^1.0.0",
+    "randomcolor": "^0.5.3",
+    "whatwg-fetch": "^2.0.3"
   },
   "babel": {
     "presets": [
