@@ -1,6 +1,9 @@
 let pkg = require("./package.json");
 
 const DEFAULTS = {
+    log: {
+        level: undefined
+    },
     reader: {
         name: "ann",
         options: {}

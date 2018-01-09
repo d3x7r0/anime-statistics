@@ -1,5 +1,9 @@
 let CONFIG = require("./config");
 
+if (CONFIG.log.level) {
+    require('winston').level = CONFIG.log.level;
+}
+
 let reader = require(`./lib/readers/${CONFIG.reader.name}`)(CONFIG.reader.options);
 
 let runner = require("sukurapa")({
