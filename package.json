@@ -1,25 +1,29 @@
 {
   "name": "nbb-anime-statistics",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Anime Statistics per Season",
   "main": "index.js",
   "author": "Luís Nabais <dextro@nonsensebb.com>",
   "license": "MIT",
+  "repository": "github:d3x7r0/anime-statistics",
   "engines": {
-    "node": ">= 6.9.x"
+    "node": ">= 8.x"
   },
   "scripts": {
+    "start": "node index.js",
     "build": "./node_modules/.bin/grunt"
   },
   "dependencies": {
-    "bluebird": "^3.4.0",
     "nano": "^6.2.0",
     "node-fetch": "^1.5.3",
     "npm": "^5.6.0",
     "rc": "^1.1.6",
     "slug": "^0.9.1",
-    "sukurapa": "^0.0.3",
-    "xml2js": "^0.4.16"
+    "sukurapa": "^0.1.1",
+    "sukurapa-writer-couch": "^0.1.1",
+    "sukurapa-writer-csv": "^0.1.1",
+    "xml2js": "^0.4.16",
+    "winston": "^2.2.0"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",
@@ -40,53 +44,5 @@
     "purecss": "^1.0.0",
     "randomcolor": "^0.5.3",
     "whatwg-fetch": "^2.0.3"
-  },
-  "babel": {
-    "presets": [
-      "es2015"
-    ],
-    "plugins": [
-      "external-helpers",
-      "transform-object-assign",
-      [
-        "transform-es2015-modules-umd",
-        {
-          "globals": {
-            "bluebird": "Promise",
-            "chart": "Chart",
-            "randomcolor": "randomColor",
-            "common": "webEs6Common",
-            "files": "webEs6Files",
-            "db": "webEs6Db"
-          }
-        }
-      ]
-    ],
-    "moduleIds": true,
-    "sourceMaps": true
-  },
-  "eslintConfig": {
-    "env": {
-      "es6": true,
-      "node": true
-    },
-    "extends": "eslint:recommended",
-    "rules": {
-      "indent": [
-        "error",
-        4
-      ],
-      "linebreak-style": [
-        "error",
-        "unix"
-      ],
-      "semi": [
-        "error",
-        "always"
-      ],
-      "no-console": 0,
-      "no-unused-vars": 1,
-      "quotes": 0
-    }
   }
 }
