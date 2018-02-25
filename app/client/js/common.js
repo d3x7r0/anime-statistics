@@ -12,7 +12,7 @@ const END_YEAR = 2017;
 let TOTALS, EPISODE_TOTALS;
 
 const ACTIVE_YEARS = Array.from(
-    {length: END_YEAR - START_YEAR},
+    {length: END_YEAR - START_YEAR + 1},
     (x, i) => START_YEAR + i
 );
 
