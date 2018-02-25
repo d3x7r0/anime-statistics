@@ -40,7 +40,7 @@ const runner = new Sukurapa({
 
 runner.run().then(function updateViews() {
     if (CONFIG.writer.name === "couch") {
-        let Couch = require('./lib/couch');
+        let Couch = require('./couch');
 
         Couch.reloadViews(CONFIG.writer.options);
     }

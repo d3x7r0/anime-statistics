@@ -1,3 +1,6 @@
+// Import CSS
+import "../css/main.css";
+
 // import DB from "./db";
 import DB from "./files";
 import Promise from "bluebird";
@@ -7,12 +10,12 @@ import Chart from "chart.js";
 const START_YEAR = 1975;
 const END_YEAR = 2017;
 
-var TOTALS, EPISODE_TOTALS;
-var ACTIVE_YEARS = [];
+let TOTALS, EPISODE_TOTALS;
 
-for (let i = START_YEAR; i <= END_YEAR; i++) {
-    ACTIVE_YEARS.push(i);
-}
+const ACTIVE_YEARS = Array.from(
+    {length: END_YEAR - START_YEAR},
+    (x, i) => START_YEAR + i
+);
 
 function fetchTotals() {
     return DB.fetchAllShows(START_YEAR, END_YEAR)
@@ -45,7 +48,7 @@ function fetchEpisodeTotals() {
 
 // DOM
 function setupDownloads() {
-    var $entries = document.querySelectorAll(".js-downloadable");
+    const $entries = document.querySelectorAll(".js-downloadable");
 
     Array.prototype.slice.call($entries)
         .forEach($el => {
@@ -60,7 +63,7 @@ function setupDownloads() {
 function onDownloadClick(e) {
     if (e.target && e.target.matches(".js-download")) {
 
-        var $canvas = this.querySelectorAll(".js-output")[0];
+        const $canvas = this.querySelectorAll(".js-output")[0];
 
         if (!$canvas) {
             e.preventDefault();
@@ -72,7 +75,7 @@ function onDownloadClick(e) {
 }
 
 function printChart(id, title, width = 800, height = 600) {
-    var $target = document.getElementById(id);
+    const $target = document.getElementById(id);
 
     let $title = document.createElement("h2");
     $title.textContent = title;
@@ -103,7 +106,7 @@ function printChart(id, title, width = 800, height = 600) {
 
 // Charts
 function drawLineChart($target, ds, yAxis) {
-    var $output = $target.querySelectorAll(".js-output");
+    const $output = $target.querySelectorAll(".js-output");
 
     if (!$output.length) {
         console.warn("Missing canvas", $target);
@@ -169,32 +172,32 @@ function generateColors(count, seed, offset = 0) {
     return randomColor({
         count: count * SKIP_VALUE,
         seed: seed
-    }).filter((entry, idx) => (idx-offset) % SKIP_VALUE === 0);
+    }).filter((entry, idx) => (idx - offset) % SKIP_VALUE === 0);
 }
 
 // src: https://css-tricks.com/snippets/javascript/lighten-darken-color/
 function lightenDarkenColor(col, amt) {
 
-    var usePound = false;
+    let usePound = false;
 
-    if (col[0] == "#") {
+    if (col[0] === "#") {
         col = col.slice(1);
         usePound = true;
     }
 
-    var num = parseInt(col, 16);
+    const num = parseInt(col, 16);
 
-    var r = (num >> 16) + amt;
+    let r = (num >> 16) + amt;
 
     if (r > 255) r = 255;
     else if (r < 0) r = 0;
 
-    var b = ((num >> 8) & 0x00FF) + amt;
+    let b = ((num >> 8) & 0x00FF) + amt;
 
     if (b > 255) b = 255;
     else if (b < 0) b = 0;
 
-    var g = (num & 0x0000FF) + amt;
+    let g = (num & 0x0000FF) + amt;
 
     if (g > 255) g = 255;
     else if (g < 0) g = 0;

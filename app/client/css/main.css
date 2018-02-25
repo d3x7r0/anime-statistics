@@ -1,3 +1,6 @@
+@import "~purecss";
+@import "~purecss/build/grids-responsive.css";
+
 .chart,
 .form-select,
 .year-details,

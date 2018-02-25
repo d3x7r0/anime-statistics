@@ -1,5 +1,5 @@
 let CONFIG = require('./config');
 
-let Couch = require('./lib/couch');
+let Couch = require('./couch');
 
 Couch.reloadViews(CONFIG.writer.options);

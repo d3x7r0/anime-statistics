@@ -221,7 +221,7 @@ function enableForm() {
     updateCharts();
 }
 
-export default function run() {
+function run() {
     $topGenresChart = Common.printChart("topGenresChart", `Top ${MAX_GENRE_ENTRIES} Genres`);
     $topThemesChart = Common.printChart("topThemesChart", `Top ${MAX_THEME_ENTRIES} Themes`);
     $typesChart = Common.printChart("typesChart", "Type of shows (%)");
@@ -237,3 +237,5 @@ export default function run() {
     Common.init()
         .then(enableForm);
 }
+
+run();

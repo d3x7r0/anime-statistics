@@ -114,7 +114,7 @@ function enableForm() {
     populateTypes();
 }
 
-export default function run() {
+function run() {
     $types = Common.printChart("types", "Types of shows per year");
     $typesRelative = Common.printChart("typesRelative", "Types of shows per year (%)");
 
@@ -122,3 +122,5 @@ export default function run() {
         Common.init()
     ]).then(enableForm);
 }
+
+run();

@@ -1,24 +1,21 @@
 {
   "presets": [
-    "es2015"
-  ],
-  "plugins": [
-    "external-helpers",
-    "transform-object-assign",
     [
-      "transform-es2015-modules-umd",
+      "env",
       {
-        "globals": {
-          "bluebird": "Promise",
-          "chart": "Chart",
-          "randomcolor": "randomColor",
-          "common": "webEs6Common",
-          "files": "webEs6Files",
-          "db": "webEs6Db"
-        }
+        "browsers": [
+          "> 1%",
+          "last 2 versions",
+          "Firefox ESR",
+          "Opera 12.1",
+          "ie >= 9"
+        ]
       }
     ]
   ],
-  "moduleIds": true,
-  "sourceMaps": true
+  "plugins": [
+    "dynamic-import-webpack",
+    "transform-object-rest-spread",
+    "transform-runtime"
+  ]
 }

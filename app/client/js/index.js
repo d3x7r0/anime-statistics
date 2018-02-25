@@ -263,7 +263,7 @@ function enableForm() {
     updateCharts();
 }
 
-export default function run() {
+function run() {
     $absolute = Common.printChart("absolute", "# of shows per year");
     $relative = Common.printChart("relative", "% of shows per year");
     $relativeCumulative = Common.printChart("relative-cumulative", "% of shows per year (cumulative)");
@@ -281,3 +281,5 @@ export default function run() {
         populateAll("themes", $themes)
     ]).then(enableForm);
 }
+
+run();
