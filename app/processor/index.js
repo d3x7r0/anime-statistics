@@ -21,7 +21,7 @@ function buildWriter() {
 }
 
 function buildReader() {
-    const Constructor = require(`./lib/readers/${CONFIG.reader.name}`);
+    const Constructor = require(`./readers/${CONFIG.reader.name}`);
 
     if (!Constructor) throw new Error("Unknown reader");
 
