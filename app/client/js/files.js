@@ -1,6 +1,6 @@
 const DATA_FOLDER = "data/";
 
-var FILES = {};
+const FILES = {};
 
 function fetchFile(file) {
     if (FILES[file]) {
@@ -10,7 +10,7 @@ function fetchFile(file) {
     }
 
     if (console && console.debug) {
-        console.debug('Fetching file "%s"', file);
+        console.debug(`Fetching file "${file}"`);
     }
 
     return fetch(DATA_FOLDER + file)

@@ -3,7 +3,6 @@ import "../css/main.css";
 
 // import DB from "./db";
 import DB from "./files";
-import Promise from "bluebird";
 import randomColor from "randomcolor";
 import Chart from "chart.js";
 
@@ -53,7 +52,7 @@ function setupDownloads() {
     Array.prototype.slice.call($entries)
         .forEach($el => {
             $el.addEventListener("click", onDownloadClick);
-            var $buttons = $el.querySelectorAll(".js-download");
+            const $buttons = $el.querySelectorAll(".js-download");
 
             Array.prototype.slice.call($buttons)
                 .forEach($b => $b.classList.remove("pure-button-disabled"));

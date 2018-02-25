@@ -1,7 +1,7 @@
 const DATABASE_LOCATION = "http://127.0.0.1:5984/ann/";
 
 function fetchDB(design, view, startKey, endKey) {
-    var parts = [
+    const parts = [
         `${DATABASE_LOCATION}/_design/${design}/_view/${view}?group=true`
     ];
 
@@ -13,7 +13,7 @@ function fetchDB(design, view, startKey, endKey) {
         parts.push(`endkey=${endKey}`);
     }
 
-    let url = parts.join("&");
+    const url = parts.join("&");
 
     console.debug("Fetching url: %s", url);
 
@@ -21,8 +21,8 @@ function fetchDB(design, view, startKey, endKey) {
 }
 
 function fetchRange(design, view, start, end) {
-    let a = JSON.stringify(start),
-        b = JSON.stringify(end || start);
+    const a = JSON.stringify(start);
+    const b = JSON.stringify(end || start);
 
     return fetchDB(design, view, `[${a}]`, `[${b}, {}]`);
 }

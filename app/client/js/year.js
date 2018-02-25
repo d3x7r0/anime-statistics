@@ -4,8 +4,8 @@ import Common from "./common";
 const MAX_GENRE_ENTRIES = 10;
 const MAX_THEME_ENTRIES = 20;
 
-var $topGenresChart, $topThemesChart, $typesChart, $topGenres, $topThemes, $yearDetails;
-var $year;
+let $topGenresChart, $topThemesChart, $typesChart, $topGenres, $topThemes, $yearDetails;
+let $year;
 
 function onDatasetChange() {
     updateCharts();
@@ -89,7 +89,7 @@ function printTop($target, dataset) {
         .innerHTML = dataset.map(entry => `<li>${entry.label} - ${entry.value} shows</li>`).join("\n");
 }
 
-var CHARTS = {
+const CHARTS = {
     "topGenre": null,
     "topTheme": null,
     "types": null

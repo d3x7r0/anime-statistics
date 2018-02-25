@@ -1,7 +1,6 @@
-import Promise from "bluebird";
 import Common from "./common";
 
-var $types, $typesRelative;
+let $types, $typesRelative;
 
 function populateTypes() {
     return getTypesData().then(ds => {
@@ -46,7 +45,7 @@ function processTypes(entries) {
     return Common.reduceToActiveYears(data);
 }
 
-var CHARTS = {
+const CHARTS = {
     "types": null,
     "types-relative": null
 };

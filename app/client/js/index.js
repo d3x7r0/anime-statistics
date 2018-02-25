@@ -1,10 +1,9 @@
-import Promise from "bluebird";
 import Common from "./common";
 
 const MIN_COUNT = 25;
 
-var $absolute, $relative, $relativeCumulative, $episodes;
-var $genres, $themes;
+let $absolute, $relative, $relativeCumulative, $episodes;
+let $genres, $themes;
 
 function onDatasetChange() {
     updateCharts();
@@ -98,7 +97,7 @@ function calculateAverages(data) {
     return data.map(value => Math.round(value["sum"] / value["count"] || 0));
 }
 
-var CHARTS = {
+const CHARTS = {
     "absolute": null,
     "relative": null,
     "relative-cumulative": null,
