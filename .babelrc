@@ -4,8 +4,8 @@
       "env",
       {
         "browsers": [
-          "> 1%",
-          "last 2 versions",
+          "> 0.5%",
+          "last 3 versions",
           "Firefox ESR",
           "Opera 12.1",
           "ie >= 9"
@@ -14,8 +14,5 @@
     ]
   ],
   "plugins": [
-    "dynamic-import-webpack",
-    "transform-object-rest-spread",
-    "transform-runtime"
   ]
 }

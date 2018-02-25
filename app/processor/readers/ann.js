@@ -22,8 +22,12 @@ const RETRY_DELAY = 1000;
 const parseXMLString = promisify(xml2js.parseString);
 
 class ANNReader {
+    constructor({startPage = START_PAGE} = {}) {
+        this._startPage = startPage;
+    }
+
     prepare() {
-        this._page = START_PAGE;
+        this._page = this._startPage;
         this._continue = true;
     }
 

@@ -6,7 +6,9 @@ const DEFAULTS = {
     },
     reader: {
         name: "ann",
-        options: {}
+        options: {
+            startPage: 0
+        }
     },
     writer: {
         name: "couch",
