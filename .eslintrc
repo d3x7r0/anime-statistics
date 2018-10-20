@@ -1,4 +1,6 @@
 {
+  "parser": "babel-eslint",
+  "extends": "problems",
   "env": {
     "es6": true,
     "node": true
@@ -7,27 +9,10 @@
     "ecmaVersion": 2017,
     "sourceType": "module"
   },
-  "extends": "eslint:recommended",
   "rules": {
-    "indent": [
-      "warn",
-      4,
-      {
-        "FunctionDeclaration": {
-          "parameters": "first"
-        }
-      }
-    ],
-    "linebreak-style": [
-      "error",
-      "unix"
-    ],
-    "semi": [
-      "warn",
-      "always"
-    ],
-    "no-console": 0,
-    "no-unused-vars": 1,
-    "quotes": 0
+    "object-shorthand": "off",
+    "no-unused-vars": "warn",
+    "no-console": "off",
+    "semi": "off"
   }
 }
