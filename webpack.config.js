@@ -1,9 +1,11 @@
 /* eslint-env node */
+
+const pkg = require('./package.json')
+
 const {resolve} = require("path");
-const pkg = require("./package.json");
-const webpack = require("webpack");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const {BannerPlugin, DefinePlugin} = require('webpack');
 
 const BASE_DIR = "app/client";
 
@@ -57,44 +59,64 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.css$/,
-                exclude: /node_modules/,
-                use: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: 'css-loader'
-                })
+                test: /\.(png|jpg|gif)$/,
+                loader: 'file-loader'
             },
             {
-                test: /\.js$/,
+                test: /\.(svg)$/,
+                loader: 'raw-loader'
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader'
+                    }
+                ]
+            },
+            {
+                test: /\.jsx?$/,
                 exclude: /node_modules/,
-                loader: "babel-loader"
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
             }
         ]
     },
     resolve: {
-        extensions: ['.js']
+        extensions: ['.js', '.jsx']
     },
     devtool: "source-map",
     devServer: {
         contentBase: resolve(__dirname, "target"),
     },
+    optimization: {
+        splitChunks: {
+            chunks: 'all'
+        }
+    },
     plugins: [
-        new webpack.BannerPlugin({
+        new DefinePlugin({
+            'process.env': {
+                'BROWSER': JSON.stringify(true),
+                'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+            }
+        }),
+        new BannerPlugin({
             entryOnly: true,
             banner: buildBanner()
         }),
-        new ExtractTextPlugin({
-            ignoreOrder: true,
-            filename: "css/styles.css"
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: "commons",
-            filename: "js/commons.js",
+        new MiniCssExtractPlugin({
+            filename: "css/[name]-[hash].css",
         }),
         ... entries.map(entry => new HtmlWebpackPlugin({
             filename: `${entry}.html`,
             template: resolve(__dirname, BASE_DIR, `${entry}.html`),
-            chunks: ["css/styles.css", "commons", entry],
+            chunks: [entry],
             hash: true
         }))
     ]

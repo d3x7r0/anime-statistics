@@ -8,11 +8,11 @@ function buildWriter() {
     let Constructor;
 
     if (CONFIG.writer.name === 'couch') {
-        Constructor = require('sukurapa-writer-couch');
+        Constructor = require('@sukurapa/writer-couch');
     }
 
     if (CONFIG.writer.name === 'csv') {
-        Constructor = require('sukurapa-writer-csv');
+        Constructor = require('@sukurapa/writer-csv');
     }
 
     if (!Constructor) throw new Error("Unknown writer");
