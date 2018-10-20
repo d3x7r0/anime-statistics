@@ -5,7 +5,7 @@ const Utils = require('../utils');
 const fetch = require("node-fetch");
 const xml2js = require("xml2js");
 const Logger = require('winston');
-const slug = require("slug");
+const slugify = require("slugify");
 const {promisify} = require('util');
 
 const TAG = "ANN";
@@ -336,7 +336,7 @@ function buildId(entry) {
     let id = undefined;
 
     if (isValidEntry(entry)) {
-        let name = slug(entry["name"]);
+        let name = slugify(entry["name"]);
 
         id = `${ entry["year"] }/${ name }`;
     }
@@ -390,7 +390,7 @@ const KNOWN_SYNONYMS = {
 let synonyms = {};
 
 function cleanupGenre(entry) {
-    let res = slug(entry, " ");
+    let res = slugify(entry, " ");
 
     res = res.toLowerCase().trim();
 
