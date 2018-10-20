@@ -17,7 +17,8 @@
     "build": "npm run build:web && npm run build:data",
     "build:web": "webpack -p",
     "build:data": "sh scripts/get_data.sh",
-    "clean": "rm -rf target"
+    "clean": "rm -rf target",
+    "debug": "webpack-dev-server --mode development --lazy"
   },
   "dependencies": {
     "@sukurapa/writer-couch": "^0.3.1",
