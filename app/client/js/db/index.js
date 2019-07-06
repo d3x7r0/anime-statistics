@@ -11,4 +11,4 @@ switch (process.env.DATA_SOURCE) {
     throw new Error('Unknown or missing data source config')
 }
 
-export default DB.default
+export default DB

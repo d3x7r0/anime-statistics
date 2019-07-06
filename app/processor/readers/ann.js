@@ -16,7 +16,7 @@ const START_PAGE = 0
 const PAGE_SIZE = 20
 const MAX_EPISODES_PER_YEAR = 52
 
-const MAX_RETRIES = 3
+const MAX_RETRIES = 5
 const RETRY_DELAY = 1000
 
 const parseXMLString = promisify(xml2js.parseString)

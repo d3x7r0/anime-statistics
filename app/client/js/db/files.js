@@ -33,7 +33,7 @@ function getFilteredData (file, entry) {
 }
 
 // url: /_design/aggregated/_view/all?group=true
-function fetchAllShows (start, end) {
+export function fetchAllShows (start, end) {
   console.debug('Fetching all shows', start, end)
 
   return fetchFile(FILES['totals']).then(data => {
@@ -46,21 +46,21 @@ function fetchAllShows (start, end) {
 }
 
 // url: /_design/aggregated/_view/episodesByType?group=true
-function fetchEpisodeData (start, end) {
+export function fetchEpisodeData (start, end) {
   console.debug('Fetching episode data', start, end)
 
   return getLimitedData(FILES['episodeTotals'], start, end)
 }
 
 // url: /_design/aggregated/_view/byKey?group=true
-function getData (key) {
+export function getData (key) {
   console.debug('Fetching aggregated data', key)
 
   return getFilteredData(FILES['data'], key)
 }
 
 // url: /_design/aggregated/_view/episodesByKeyAndType?group=true
-function getEpisodeData (key) {
+export function getEpisodeData (key) {
   console.debug('Fetching episode data', key)
 
   return getFilteredData(FILES['episodeData'], key)
@@ -68,7 +68,7 @@ function getEpisodeData (key) {
 
 // url: /_design/genre/_view/all?group=true
 // url: /_design/themes/_view/all?group=true
-function getGenreData (type) {
+export function getGenreData (type) {
   console.debug('Fetching genre data', type)
 
   switch (type) {
@@ -83,7 +83,7 @@ function getGenreData (type) {
 
 // url: /_design/genres/_view/byYear?group=true
 // url: /_design/themes/_view/byYear?group=true
-function getYearData (type, year) {
+export function getYearData (type, year) {
   console.debug('Fetching year data', type, year)
 
   year = parseInt(year, 10)
@@ -99,26 +99,15 @@ function getYearData (type, year) {
 }
 
 // url: /_design/types/_view/byYear?group=true&startkey=[1975]&endkey=[1975,{}];
-function getTypesData (start, end) {
+export function getTypesData (start, end) {
   console.debug('Fetching types data')
 
   return getLimitedData(FILES['types'], start, end)
 }
 
 // url: /_design/types/_view/byYear?group=true
-function getTypes (year) {
+export function getTypes (year) {
   console.debug('Fetching types data', year)
 
   return getFilteredData(FILES['types'], parseInt(year, 10))
-}
-
-export default {
-  fetchAllShows: fetchAllShows,
-  fetchEpisodeData: fetchEpisodeData,
-  getData: getData,
-  getEpisodeData: getEpisodeData,
-  getGenreData: getGenreData,
-  getYearData: getYearData,
-  getTypesData: getTypesData,
-  getTypes: getTypes,
 }

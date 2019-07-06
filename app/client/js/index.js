@@ -1,6 +1,10 @@
-import Common from './common'
-
-const MIN_COUNT = 25
+import DB from './db'
+import { generateColors } from './utils/color'
+import { MIN_SHOW_COUNT } from './config'
+import { buildEntry, mapToActiveYears, reduceToActiveYears } from './utils/entries'
+import { setupDownloads } from './dom/downloads'
+import { drawLineChart, printChart } from './dom/charts'
+import { getEpisodeTotals, getTotals, init } from './data'
 
 let $absolute, $relative, $relativeCumulative, $episodes
 let $genres, $themes
@@ -10,10 +14,10 @@ function onDatasetChange () {
 }
 
 function updateCharts () {
-  let values = getActive()
+  const values = getActive()
 
   Promise.all(
-    values.map(getData)
+    values.map(getData),
   ).then(ds => {
     console.debug('Genre data', ds)
 
@@ -23,7 +27,7 @@ function updateCharts () {
   })
 
   Promise.all(
-    values.map(getEpisodeData)
+    values.map(getEpisodeData),
   ).then(ds => {
     console.debug('Episode Count per Genre Data', ds)
 
@@ -45,37 +49,37 @@ function getActive () {
 }
 
 function getData (entry) {
-  return Common.DB.getData(entry.key)
+  return DB.getData(entry.key)
     .then(data => processEntries(data && data.rows))
-    .then(Common.buildEntry(entry))
+    .then(buildEntry(entry))
 }
 
 function getEpisodeData (entry) {
-  return Common.DB.getEpisodeData(entry.key)
+  return DB.getEpisodeData(entry.key)
     .then(data => processEpisodeEntries(data && data.rows))
     .then(calculateEpisodeAverages)
     .then(data => Object.keys(data).reduce((memo, key) => {
-      memo[key] = Common.buildEntry(entry)(data[key])
+      memo[key] = buildEntry(entry)(data[key])
       return memo
     }, {}))
 }
 
 function processEntries (entries) {
-  let data = [].concat(entries || [])
+  const data = [].concat(entries || [])
     .reduce((memo, entry) => {
-      let key = entry.key[1]
+      const key = entry.key[1]
       memo[key] = entry.value
       return memo
     }, {})
 
-  return Common.mapToActiveYears(data)
+  return mapToActiveYears(data)
 }
 
 function processEpisodeEntries (entries) {
-  let data = [].concat(entries || [])
+  const data = [].concat(entries || [])
     .reduce((memo, entry) => {
-      let year = entry.key[2]
-      let type = entry.key[1]
+      const year = entry.key[2]
+      const type = entry.key[1]
 
       memo[type] = memo[type] || {}
       memo[type][year] = entry.value
@@ -83,7 +87,7 @@ function processEpisodeEntries (entries) {
       return memo
     }, {})
 
-  return Common.reduceToActiveYears(data)
+  return reduceToActiveYears(data)
 }
 
 function calculateEpisodeAverages (data) {
@@ -104,14 +108,12 @@ const CHARTS = {
   'episodes': null,
 }
 
-function drawAbsoluteChart (datasets) {
+function drawAbsoluteChart (datasets = []) {
   if (CHARTS['absolute']) {
     CHARTS['absolute'].destroy()
   }
 
-  let ds = datasets
-
-  let yAxis = {
+  const yAxis = {
     scaleLabel: {
       display: true,
       labelString: 'count',
@@ -121,23 +123,23 @@ function drawAbsoluteChart (datasets) {
     },
   }
 
-  let totals = Common.getTotals()
+  const totals = getTotals()
 
-  ds = [{
+  const ds = [{
     label: 'total',
     data: Object.keys(totals).map(y => totals[y]),
     fill: false,
-  }].concat(ds || [])
+  }].concat(datasets)
 
-  CHARTS['absolute'] = Common.drawLineChart($absolute, ds, yAxis)
+  CHARTS['absolute'] = drawLineChart($absolute, ds, yAxis)
 }
 
-function drawRelativeChart (datasets) {
+function drawRelativeChart (datasets = []) {
   if (CHARTS['relative']) {
     CHARTS['relative'].destroy()
   }
 
-  let yAxis = {
+  const yAxis = {
     scaleLabel: {
       display: true,
       labelString: 'percent',
@@ -149,14 +151,14 @@ function drawRelativeChart (datasets) {
     },
   }
 
-  let totals = Common.getTotals()
+  const totals = getTotals()
 
-  let ds = datasets.map(ds => {
-    let years = Object.keys(totals)
-    let res = Object.assign({}, ds)
+  const ds = datasets.map(ds => {
+    const years = Object.keys(totals)
+    const res = Object.assign({}, ds)
 
     res.data = res.data.map((value, idx) => {
-      let year = years[idx]
+      const year = years[idx]
       let v = (value / totals[year] * 100)
       v = v.toFixed(2)
       return parseInt(v, 10)
@@ -165,15 +167,15 @@ function drawRelativeChart (datasets) {
     return res
   })
 
-  CHARTS['relative'] = Common.drawLineChart($relative, ds, yAxis)
+  CHARTS['relative'] = drawLineChart($relative, ds, yAxis)
 }
 
-function drawCumulativeRelativeChart (datasets) {
+function drawCumulativeRelativeChart (datasets = []) {
   if (CHARTS['relative-cumulative']) {
     CHARTS['relative-cumulative'].destroy()
   }
 
-  let yAxis = {
+  const yAxis = {
     stacked: true,
     scaleLabel: {
       display: true,
@@ -184,16 +186,16 @@ function drawCumulativeRelativeChart (datasets) {
     },
   }
 
-  let totals = Common.getTotals()
+  const totals = getTotals()
 
-  let ds = datasets.map(ds => {
-    let years = Object.keys(totals)
-    let res = Object.assign({}, ds)
+  const ds = datasets.map(ds => {
+    const years = Object.keys(totals)
+    const res = Object.assign({}, ds)
 
     res.fill = true
 
     res.data = res.data.map((value, idx) => {
-      let year = years[idx]
+      const year = years[idx]
       let v = (value / totals[year] * 100)
       v = v.toFixed(2)
       return parseInt(v, 10)
@@ -202,17 +204,15 @@ function drawCumulativeRelativeChart (datasets) {
     return res
   })
 
-  CHARTS['relative-cumulative'] = Common.drawLineChart($relativeCumulative, ds, yAxis)
+  CHARTS['relative-cumulative'] = drawLineChart($relativeCumulative, ds, yAxis)
 }
 
-function drawEpisodesChart (datasets) {
+function drawEpisodesChart (datasets = []) {
   if (CHARTS['episodes']) {
     CHARTS['episodes'].destroy()
   }
 
-  let ds = datasets.map(ds => ds['tv'])
-
-  let yAxis = {
+  const yAxis = {
     scaleLabel: {
       display: true,
       labelString: 'avg. episode count',
@@ -222,23 +222,23 @@ function drawEpisodesChart (datasets) {
     },
   }
 
-  let totals = Common.getEpisodeTotals()['tv']
+  const totals = getEpisodeTotals()['tv']
 
-  ds = [{
+  const ds = [{
     label: 'overall',
     data: Object.keys(totals).map(y => totals[y]),
     fill: false,
-  }].concat(ds || [])
+  }].concat(datasets.map(ds => ds['tv']))
 
-  CHARTS['episodes'] = Common.drawLineChart($episodes, ds, yAxis)
+  CHARTS['episodes'] = drawLineChart($episodes, ds, yAxis)
 }
 
 function populateAll (type, $target) {
-  return Common.DB.getGenreData(type)
+  return DB.getGenreData(type)
     .then(function (data) {
-      let entries = data.rows.filter(d => d.value >= MIN_COUNT)
+      let entries = data.rows.filter(d => d.value >= MIN_SHOW_COUNT)
 
-      let colors = Common.generateColors(entries.length, 'genre-data-' + type)
+      const colors = generateColors(entries.length, 'genre-data-' + type)
 
       entries = entries.map((entry, idx) => {
         entry.color = colors[idx]
@@ -254,7 +254,7 @@ function printOption (entry) {
 }
 
 function enableForm () {
-  Common.setupDownloads()
+  setupDownloads()
 
   $genres.removeAttribute('disabled')
   $themes.removeAttribute('disabled')
@@ -263,10 +263,10 @@ function enableForm () {
 }
 
 function run () {
-  $absolute = Common.printChart('absolute', '# of shows per year')
-  $relative = Common.printChart('relative', '% of shows per year')
-  $relativeCumulative = Common.printChart('relative-cumulative', '% of shows per year (cumulative)')
-  $episodes = Common.printChart('episodes', 'Avg. # of Eps per year (TV)')
+  $absolute = printChart('absolute', '# of shows per year')
+  $relative = printChart('relative', '% of shows per year')
+  $relativeCumulative = printChart('relative-cumulative', '% of shows per year (cumulative)')
+  $episodes = printChart('episodes', 'Avg. # of Eps per year (TV)')
 
   $genres = document.getElementById('genres')
   $themes = document.getElementById('themes')
@@ -275,7 +275,7 @@ function run () {
   $themes.addEventListener('change', onDatasetChange)
 
   Promise.all([
-    Common.init(),
+    init(),
     populateAll('genres', $genres),
     populateAll('themes', $themes),
   ]).then(enableForm)

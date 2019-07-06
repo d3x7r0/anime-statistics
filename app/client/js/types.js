@@ -1,4 +1,10 @@
-import Common from './common'
+import DB from './db'
+import { generateColors } from './utils/color'
+import { END_YEAR, START_YEAR } from './config'
+import { buildEntry, reduceToActiveYears } from './utils/entries'
+import { setupDownloads } from './dom/downloads'
+import { drawLineChart, printChart } from './dom/charts'
+import { getTotals, init } from './data'
 
 let $types, $typesRelative
 
@@ -12,15 +18,15 @@ function populateTypes () {
 }
 
 function getTypesData () {
-  return Common.DB.getTypesData(Common.START_YEAR, Common.END_YEAR)
+  return DB.getTypesData(START_YEAR, END_YEAR)
     .then(data => processTypes(data && data.rows))
     .then(data => {
-      let types = Object.keys(data)
+      const types = Object.keys(data)
 
-      let colors = Common.generateColors(types.length, 'show-type-year-data')
+      const colors = generateColors(types.length, 'show-type-year-data')
 
       return types.map((type, idx) => {
-        let fn = Common.buildEntry({
+        const fn = buildEntry({
           key: type,
           color: colors[idx],
         })
@@ -31,10 +37,10 @@ function getTypesData () {
 }
 
 function processTypes (entries) {
-  let data = [].concat(entries || [])
+  const data = [].concat(entries || [])
     .reduce((memo, entry) => {
-      let year = entry.key[1]
-      let type = entry.key[0]
+      const year = entry.key[1]
+      const type = entry.key[0]
 
       memo[year] = memo[year] || {}
       memo[year][type] = entry.value
@@ -42,7 +48,7 @@ function processTypes (entries) {
       return memo
     }, {})
 
-  return Common.reduceToActiveYears(data)
+  return reduceToActiveYears(data)
 }
 
 const CHARTS = {
@@ -55,7 +61,7 @@ function drawTypesChart (datasets) {
     CHARTS['types'].destroy()
   }
 
-  let yAxis = {
+  const yAxis = {
     scaleLabel: {
       display: true,
       labelString: 'count',
@@ -65,15 +71,15 @@ function drawTypesChart (datasets) {
     },
   }
 
-  CHARTS['types'] = Common.drawLineChart($types, datasets, yAxis)
+  CHARTS['types'] = drawLineChart($types, datasets, yAxis)
 }
 
-function drawTypesRelativeChart (datasets) {
+function drawTypesRelativeChart (datasets = []) {
   if (CHARTS['types-relative']) {
     CHARTS['types-relative'].destroy()
   }
 
-  let yAxis = {
+  const yAxis = {
     stacked: true,
     scaleLabel: {
       display: true,
@@ -86,16 +92,16 @@ function drawTypesRelativeChart (datasets) {
     },
   }
 
-  let totals = Common.getTotals()
+  let totals = getTotals()
 
-  let ds = datasets.map(ds => {
-    let years = Object.keys(totals)
-    let res = Object.assign({}, ds)
+  const ds = datasets.map(ds => {
+    const years = Object.keys(totals)
+    const res = Object.assign({}, ds)
 
     res.fill = true
 
     res.data = res.data.map((value, idx) => {
-      let year = years[idx]
+      const year = years[idx]
       let v = (value / totals[year] * 100)
       v = v.toFixed(2)
       return parseInt(v, 10)
@@ -104,22 +110,20 @@ function drawTypesRelativeChart (datasets) {
     return res
   })
 
-  CHARTS['types-relative'] = Common.drawLineChart($typesRelative, ds, yAxis)
+  CHARTS['types-relative'] = drawLineChart($typesRelative, ds, yAxis)
 }
 
 function enableForm () {
-  Common.setupDownloads()
+  setupDownloads()
 
   populateTypes()
 }
 
 function run () {
-  $types = Common.printChart('types', 'Types of shows per year')
-  $typesRelative = Common.printChart('typesRelative', 'Types of shows per year (%)')
+  $types = printChart('types', 'Types of shows per year')
+  $typesRelative = printChart('typesRelative', 'Types of shows per year (%)')
 
-  Promise.all([
-    Common.init(),
-  ]).then(enableForm)
+  init().then(enableForm)
 }
 
 run()

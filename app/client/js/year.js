@@ -1,8 +1,10 @@
+import DB from './db'
 import Chart from 'chart.js'
-import Common from './common'
-
-const MAX_GENRE_ENTRIES = 10
-const MAX_THEME_ENTRIES = 20
+import { generateColors, lightenDarkenColor } from './utils/color'
+import { END_YEAR, MAX_GENRE_ENTRIES, MAX_THEME_ENTRIES } from './config'
+import { setupDownloads } from './dom/downloads'
+import { printChart } from './dom/charts'
+import { getEpisodeTotals, getTotals, init } from './data'
 
 let $topGenresChart, $topThemesChart, $typesChart, $topGenres, $topThemes, $yearDetails
 let $year
@@ -12,11 +14,11 @@ function onDatasetChange () {
 }
 
 function updateCharts () {
-  let active = getActive()
+  const active = getActive()
 
   getData(
     'genres',
-    active
+    active,
   ).then(ds => {
     console.debug(ds)
 
@@ -26,7 +28,7 @@ function updateCharts () {
 
   getData(
     'themes',
-    active
+    active,
   ).then(ds => {
     console.debug(ds)
 
@@ -44,7 +46,7 @@ function updateCharts () {
 }
 
 function getActive () {
-  let $el = $year.querySelectorAll(`[value="${$year.value}"]`)[0]
+  const $el = $year.querySelectorAll(`[value="${$year.value}"]`)[0]
 
   if (!$el) {
     return
@@ -56,20 +58,20 @@ function getActive () {
 }
 
 function getData (type, entry) {
-  return Common.DB.getYearData(type, entry.key)
+  return DB.getYearData(type, entry.key)
     .then(processEntries(type + '-year-data'))
 }
 
 function getTypes (entry) {
-  return Common.DB.getTypes(entry.key)
+  return DB.getTypes(entry.key)
     .then(processEntries('types-year-data'))
 }
 
 function processEntries (colorSeed) {
-  return function (entries) {
-    let rows = [].concat(entries.rows || [])
+  return entries => {
+    const rows = [].concat(entries.rows || [])
 
-    let color = Common.generateColors(rows.length, colorSeed)
+    const color = generateColors(rows.length, colorSeed)
 
     return rows
       .sort((a, b) => b.value - a.value)
@@ -77,12 +79,12 @@ function processEntries (colorSeed) {
         label: entry.key[1],
         value: entry.value,
         backgroundColor: color[idx],
-        hoverBackgroundColor: Common.lightenDarkenColor(color[idx], -35),
+        hoverBackgroundColor: lightenDarkenColor(color[idx], -35),
       }))
   }
 }
 
-function printTop ($target, dataset) {
+function printTop ($target, dataset = []) {
   $target
     .querySelectorAll('.js-output')[0]
     .innerHTML = dataset.map(entry => `<li>${entry.label} - ${entry.value} shows</li>`).join('\n')
@@ -102,7 +104,7 @@ function drawTopGenreChart (dataset) {
   CHARTS['topGenre'] = drawChart(
     'pie',
     $topGenresChart,
-    limit(dataset, MAX_GENRE_ENTRIES)
+    limit(dataset, MAX_GENRE_ENTRIES),
   )
 }
 
@@ -114,18 +116,18 @@ function drawTopThemesChart (dataset) {
   CHARTS['topTheme'] = drawChart(
     'pie',
     $topThemesChart,
-    dataset.slice(0, MAX_THEME_ENTRIES)
+    dataset.slice(0, MAX_THEME_ENTRIES),
   )
 }
 
-function drawTypesChart (dataset, year) {
+function drawTypesChart (dataset = [], year) {
   if (CHARTS['types']) {
     CHARTS['types'].destroy()
   }
 
   dataset = dataset.map(entry => {
-    let res = Object.assign({}, entry)
-    let v = (entry.value / Common.getTotals()[year] * 100)
+    const res = Object.assign({}, entry)
+    let v = (entry.value / getTotals()[year] * 100)
     v = v.toFixed(2)
     res.value = parseInt(v, 10)
     return res
@@ -148,10 +150,10 @@ function drawTypesChart (dataset, year) {
   })
 }
 
-function drawChart (type, $target, dataset, label, options) {
-  let $output = $target.querySelectorAll('.js-output')
+function drawChart (type, $target, dataset = [], label, options) {
+  const $output = $target.querySelectorAll('.js-output')
 
-  let data = dataset.reduce((memo, entry) => {
+  const data = dataset.reduce((memo, entry) => {
     memo.labels.push(entry.label)
 
     memo.datasets[0].data.push(entry.value)
@@ -176,11 +178,10 @@ function drawChart (type, $target, dataset, label, options) {
   })
 }
 
-function limit (dataset, limit) {
-  let data = dataset.slice(0, limit)
-  let rest = dataset.slice(limit)
+function limit (dataset = [], limit) {
+  const data = dataset.slice(0, limit)
 
-  rest = rest.reduce((memo, entry) => ({
+  const rest = dataset.slice(limit).reduce((memo, entry) => ({
     label: 'Others',
     value: memo.value + entry.value,
     backgroundColor: memo.backgroundColor || entry.backgroundColor,
@@ -195,13 +196,13 @@ function limit (dataset, limit) {
 }
 
 function updateStats (entry) {
-  let year = entry.key
+  const year = entry.key
 
-  let totals = Common.getTotals()
-  let episodeTotals = Common.getEpisodeTotals()['tv']
+  const totals = getTotals()
+  const episodeTotals = getEpisodeTotals()['tv']
 
   $yearDetails.innerHTML = `<li><strong>Number of shows:</strong> ${totals[year]}</li>` +
-        `<li><strong>Average Episode Count:</strong> ${episodeTotals[year]}</li>`
+    `<li><strong>Average Episode Count:</strong> ${episodeTotals[year]}</li>`
 }
 
 function printOption (key) {
@@ -209,21 +210,21 @@ function printOption (key) {
 }
 
 function enableForm () {
-  Common.setupDownloads()
+  setupDownloads()
 
-  $year.innerHTML = Object.keys(Common.getTotals())
+  $year.innerHTML = Object.keys(getTotals())
     .map(printOption)
     .join('\n')
-  $year.value = Common.END_YEAR
+  $year.value = END_YEAR
   $year.removeAttribute('disabled')
 
   updateCharts()
 }
 
 function run () {
-  $topGenresChart = Common.printChart('topGenresChart', `Top ${MAX_GENRE_ENTRIES} Genres`)
-  $topThemesChart = Common.printChart('topThemesChart', `Top ${MAX_THEME_ENTRIES} Themes`)
-  $typesChart = Common.printChart('typesChart', 'Type of shows (%)')
+  $topGenresChart = printChart('topGenresChart', `Top ${MAX_GENRE_ENTRIES} Genres`)
+  $topThemesChart = printChart('topThemesChart', `Top ${MAX_THEME_ENTRIES} Themes`)
+  $typesChart = printChart('typesChart', 'Type of shows (%)')
 
   $topGenres = document.getElementById('topGenres')
   $topThemes = document.getElementById('topThemes')
@@ -233,8 +234,7 @@ function run () {
 
   $year.addEventListener('change', onDatasetChange)
 
-  Common.init()
-    .then(enableForm)
+  init().then(enableForm)
 }
 
 run()

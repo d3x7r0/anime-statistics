@@ -25,61 +25,50 @@ function fetchRange (design, view, start, end) {
   return fetchDB(design, view, `[${a}]`, `[${b}, {}]`)
 }
 
-function fetchAllShows (start, end) {
+export function fetchAllShows (start, end) {
   console.debug('Fetching all shows', start, end)
 
   return fetchDB('aggregated', 'all', start, end)
 }
 
-function fetchEpisodeData (start, end) {
+export function fetchEpisodeData (start, end) {
   console.debug('Fetching episode data', start, end)
 
   return fetchRange('aggregated', 'episodesByType', start, end)
 }
 
-function getData (key) {
+export function getData (key) {
   console.debug('Fetching aggregated data', key)
 
   return fetchRange('aggregated', 'byKey', key)
 }
 
-function getEpisodeData (key) {
+export function getEpisodeData (key) {
   console.debug('Fetching episode data', key)
 
   return fetchRange('aggregated', 'episodesByKeyAndType', key)
 }
 
-function getGenreData (type) {
+export function getGenreData (type) {
   console.debug('Fetching genre data', type)
 
   return fetchDB(type, 'all')
 }
 
-function getYearData (type, year) {
+export function getYearData (type, year) {
   console.debug('Fetching year data', type, year)
 
   return fetchRange(type, 'byYear', parseInt(year, 10))
 }
 
-function getTypesData (start, end) {
+export function getTypesData (start, end) {
   console.debug('Fetching types data')
 
   return fetchRange('types', 'byYear', start, end)
 }
 
-function getTypes (year) {
+export function getTypes (year) {
   console.debug('Fetching types data', year)
 
   return fetchRange('types', 'byYear', parseInt(year, 10))
-}
-
-export default {
-  fetchAllShows: fetchAllShows,
-  fetchEpisodeData: fetchEpisodeData,
-  getData: getData,
-  getEpisodeData: getEpisodeData,
-  getGenreData: getGenreData,
-  getYearData: getYearData,
-  getTypesData: getTypesData,
-  getTypes: getTypes,
 }
