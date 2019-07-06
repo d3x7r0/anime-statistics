@@ -2,14 +2,14 @@ import DB from './db'
 import randomColor from 'randomcolor'
 import Chart from 'chart.js'
 
-const START_YEAR = 1975
-const END_YEAR = 2017
+const START_YEAR = parseInt(process.env.START_YEAR, 10)
+const END_YEAR = parseInt(process.env.END_YEAR, 10)
 
 let TOTALS, EPISODE_TOTALS
 
 const ACTIVE_YEARS = Array.from(
   { length: END_YEAR - START_YEAR + 1 },
-  (x, i) => START_YEAR + i
+  (x, i) => START_YEAR + i,
 )
 
 function fetchTotals () {
