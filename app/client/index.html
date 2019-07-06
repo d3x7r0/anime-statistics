@@ -1,45 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>ANN Encyclopedia Statistics</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ANN Encyclopedia Statistics</title>
 
+  <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
-    <div class="pure-menu pure-menu-horizontal top-menu">
-        <p class="pure-menu-heading">ANN Encyclopedia Statistics</p>
-        <ul class="pure-menu-list">
-            <li class="pure-menu-item"><a href="./" class="pure-menu-link">Genres</a></li>
-            <li class="pure-menu-item"><a href="./year.html" class="pure-menu-link">Year</a></li>
-            <li class="pure-menu-item"><a href="./types.html" class="pure-menu-link">Types</a></li>
-        </ul>
-    </div>
+<div class="pure-menu pure-menu-horizontal top-menu">
+  <p class="pure-menu-heading">ANN Encyclopedia Statistics</p>
+  <ul class="pure-menu-list">
+    <li class="pure-menu-item"><a href="./" class="pure-menu-link">Genres</a></li>
+    <li class="pure-menu-item"><a href="./year.html" class="pure-menu-link">Year</a></li>
+    <li class="pure-menu-item"><a href="./types.html" class="pure-menu-link">Types</a></li>
+  </ul>
+</div>
 
-    <div class="charts pure-g">
-        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="relative"></div>
-        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="relative-cumulative"></div>
-        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="absolute"></div>
-        <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="episodes"></div>
-    </div>
+<div class="charts pure-g">
+  <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="relative"></div>
+  <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="relative-cumulative"></div>
+  <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="absolute"></div>
+  <div class="chart pure-u-1 pure-u-lg-1-2 js-downloadable" id="episodes"></div>
+</div>
 
-    <form id="controls" class="pure-form pure-g">
-        <div class="form-select pure-u-1 pure-u-md-1-2">
-            <fieldset name="genres" id="genres" disabled>
-                <legend>Genres:</legend>
-                <div class="js-values">
-                    <p>loading...</p>
-                </div>
-            </fieldset>
-        </div>
-        <div class="form-select pure-u-1 pure-u-md-1-2">
-            <fieldset name="themes" id="themes" disabled>
-                <legend>Themes:</legend>
-                <div class="js-values">
-                    <p>loading...</p>
-                </div>
-            </fieldset>
-        </div>
-    </form>
+<form id="controls" class="pure-form pure-g">
+  <div class="form-select pure-u-1 pure-u-md-1-2">
+    <fieldset name="genres" id="genres" disabled>
+      <legend>Genres:</legend>
+      <div class="js-values">
+        <p>loading...</p>
+      </div>
+    </fieldset>
+  </div>
+  <div class="form-select pure-u-1 pure-u-md-1-2">
+    <fieldset name="themes" id="themes" disabled>
+      <legend>Themes:</legend>
+      <div class="js-values">
+        <p>loading...</p>
+      </div>
+    </fieldset>
+  </div>
+</form>
+
+<script src="./js/index.js"></script>
 </body>
 </html>

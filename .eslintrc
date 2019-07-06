@@ -1,6 +1,8 @@
 {
   "parser": "babel-eslint",
-  "extends": "problems",
+  "extends": [
+    "standard"
+  ],
   "env": {
     "es6": true,
     "node": true
@@ -10,9 +12,9 @@
     "sourceType": "module"
   },
   "rules": {
-    "object-shorthand": "off",
-    "no-unused-vars": "warn",
-    "no-console": "off",
-    "semi": "off"
+    "comma-dangle": [
+      "warn",
+      "always-multiline"
+    ]
   }
 }

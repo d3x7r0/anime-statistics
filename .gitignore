@@ -1,4 +1,7 @@
+node_modules
+.cache
 out.csv
 stats.csv
 target
 .nbb-anime-statisticsrc
+data

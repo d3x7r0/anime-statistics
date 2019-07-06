@@ -1,31 +1,31 @@
-let Logger = require('winston');
+let Logger = require('winston')
 
-let DEFAULT_DELAY = 1000;
+let DEFAULT_DELAY = 1000
 
-const TAG = "UTILS";
+const TAG = 'UTILS'
 
-function delay(time = DEFAULT_DELAY) {
-    return data => new Promise(resolve => {
-        Logger.debug(`[${TAG}] Delaying ${time} milliseconds between requests`);
+function delay (time = DEFAULT_DELAY) {
+  return data => new Promise(resolve => {
+    Logger.debug(`[${TAG}] Delaying ${time} milliseconds between requests`)
 
-        setTimeout(() => resolve(data), time);
-    });
+    setTimeout(() => resolve(data), time)
+  })
 }
 
-let QUEUE = Promise.resolve();
+let QUEUE = Promise.resolve()
 
-function queue(fn, data) {
-    const delayer = delay();
+function queue (fn, data) {
+  const delayer = delay()
 
-    const ret = QUEUE.then(() => fn(data));
+  const ret = QUEUE.then(() => fn(data))
 
-    QUEUE = ret.then(delayer, delayer);
+  QUEUE = ret.then(delayer, delayer)
 
-    return ret;
+  return ret
 }
 
 module.exports = {
-    DEFAULT_DELAY,
-    delay,
-    queue
-};
+  DEFAULT_DELAY,
+  delay,
+  queue,
+}

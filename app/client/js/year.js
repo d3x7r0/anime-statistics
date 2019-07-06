@@ -1,241 +1,240 @@
-import Chart from "chart.js";
-import Common from "./common";
+import Chart from 'chart.js'
+import Common from './common'
 
-const MAX_GENRE_ENTRIES = 10;
-const MAX_THEME_ENTRIES = 20;
+const MAX_GENRE_ENTRIES = 10
+const MAX_THEME_ENTRIES = 20
 
-let $topGenresChart, $topThemesChart, $typesChart, $topGenres, $topThemes, $yearDetails;
-let $year;
+let $topGenresChart, $topThemesChart, $typesChart, $topGenres, $topThemes, $yearDetails
+let $year
 
-function onDatasetChange() {
-    updateCharts();
+function onDatasetChange () {
+  updateCharts()
 }
 
-function updateCharts() {
-    let active = getActive();
+function updateCharts () {
+  let active = getActive()
 
-    getData(
-        "genres",
-        active
-    ).then(ds => {
-        console.debug(ds);
+  getData(
+    'genres',
+    active
+  ).then(ds => {
+    console.debug(ds)
 
-        printTop($topGenres, ds);
-        drawTopGenreChart(ds);
-    });
+    printTop($topGenres, ds)
+    drawTopGenreChart(ds)
+  })
 
-    getData(
-        "themes",
-        active
-    ).then(ds => {
-        console.debug(ds);
+  getData(
+    'themes',
+    active
+  ).then(ds => {
+    console.debug(ds)
 
-        printTop($topThemes, ds);
-        drawTopThemesChart(ds);
-    });
+    printTop($topThemes, ds)
+    drawTopThemesChart(ds)
+  })
 
-    updateStats(active);
+  updateStats(active)
 
-    getTypes(active).then(ds => {
-        console.debug(ds);
+  getTypes(active).then(ds => {
+    console.debug(ds)
 
-        drawTypesChart(ds, parseInt(active.key, 10));
-    });
+    drawTypesChart(ds, parseInt(active.key, 10))
+  })
 }
 
-function getActive() {
-    let $el = $year.querySelectorAll(`[value="${$year.value}"]`)[0];
+function getActive () {
+  let $el = $year.querySelectorAll(`[value="${$year.value}"]`)[0]
 
-    if (!$el) {
-        return;
-    }
+  if (!$el) {
+    return
+  }
 
-    return ({
-        key: $el.value
-    });
+  return ({
+    key: $el.value,
+  })
 }
 
-function getData(type, entry) {
-    return Common.DB.getYearData(type, entry.key)
-        .then(processEntries(type + "-year-data"));
+function getData (type, entry) {
+  return Common.DB.getYearData(type, entry.key)
+    .then(processEntries(type + '-year-data'))
 }
 
-function getTypes(entry) {
-    return Common.DB.getTypes(entry.key)
-        .then(processEntries("types-year-data"));
+function getTypes (entry) {
+  return Common.DB.getTypes(entry.key)
+    .then(processEntries('types-year-data'))
 }
 
-function processEntries(colorSeed) {
+function processEntries (colorSeed) {
+  return function (entries) {
+    let rows = [].concat(entries.rows || [])
 
-    return function (entries) {
-        let rows = [].concat(entries.rows || []);
+    let color = Common.generateColors(rows.length, colorSeed)
 
-        let color = Common.generateColors(rows.length, colorSeed);
-
-        return rows
-            .sort((a, b) => b.value - a.value)
-            .map((entry, idx) => ({
-                label: entry.key[1],
-                value: entry.value,
-                backgroundColor: color[idx],
-                hoverBackgroundColor: Common.lightenDarkenColor(color[idx], -35)
-            }));
-    };
+    return rows
+      .sort((a, b) => b.value - a.value)
+      .map((entry, idx) => ({
+        label: entry.key[1],
+        value: entry.value,
+        backgroundColor: color[idx],
+        hoverBackgroundColor: Common.lightenDarkenColor(color[idx], -35),
+      }))
+  }
 }
 
-function printTop($target, dataset) {
-    $target
-        .querySelectorAll(".js-output")[0]
-        .innerHTML = dataset.map(entry => `<li>${entry.label} - ${entry.value} shows</li>`).join("\n");
+function printTop ($target, dataset) {
+  $target
+    .querySelectorAll('.js-output')[0]
+    .innerHTML = dataset.map(entry => `<li>${entry.label} - ${entry.value} shows</li>`).join('\n')
 }
 
 const CHARTS = {
-    "topGenre": null,
-    "topTheme": null,
-    "types": null
-};
-
-function drawTopGenreChart(dataset) {
-    if (CHARTS["topGenre"]) {
-        CHARTS["topGenre"].destroy();
-    }
-
-    CHARTS["topGenre"] = drawChart(
-        "pie",
-        $topGenresChart,
-        limit(dataset, MAX_GENRE_ENTRIES)
-    );
+  'topGenre': null,
+  'topTheme': null,
+  'types': null,
 }
 
-function drawTopThemesChart(dataset) {
-    if (CHARTS["topTheme"]) {
-        CHARTS["topTheme"].destroy();
-    }
+function drawTopGenreChart (dataset) {
+  if (CHARTS['topGenre']) {
+    CHARTS['topGenre'].destroy()
+  }
 
-    CHARTS["topTheme"] = drawChart(
-        "pie",
-        $topThemesChart,
-        dataset.slice(0, MAX_THEME_ENTRIES)
-    );
+  CHARTS['topGenre'] = drawChart(
+    'pie',
+    $topGenresChart,
+    limit(dataset, MAX_GENRE_ENTRIES)
+  )
 }
 
-function drawTypesChart(dataset, year) {
-    if (CHARTS["types"]) {
-        CHARTS["types"].destroy();
-    }
+function drawTopThemesChart (dataset) {
+  if (CHARTS['topTheme']) {
+    CHARTS['topTheme'].destroy()
+  }
 
-    dataset = dataset.map(entry => {
-        let res = Object.assign({}, entry);
-        let v = (entry.value / Common.getTotals()[year] * 100);
-        v = v.toFixed(2);
-        res.value = parseInt(v, 10);
-        return res;
-    });
-
-    CHARTS["types"] = drawChart("horizontalBar", $typesChart, dataset, "Types", {
-        scales: {
-            yAxes: [{
-                stacked: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: "percent"
-                },
-                ticks: {
-                    max: 100,
-                    beginAtZero: true
-                }
-            }]
-        }
-    });
+  CHARTS['topTheme'] = drawChart(
+    'pie',
+    $topThemesChart,
+    dataset.slice(0, MAX_THEME_ENTRIES)
+  )
 }
 
-function drawChart(type, $target, dataset, label, options) {
-    let $output = $target.querySelectorAll(".js-output");
+function drawTypesChart (dataset, year) {
+  if (CHARTS['types']) {
+    CHARTS['types'].destroy()
+  }
 
-    let data = dataset.reduce((memo, entry) => {
-        memo.labels.push(entry.label);
+  dataset = dataset.map(entry => {
+    let res = Object.assign({}, entry)
+    let v = (entry.value / Common.getTotals()[year] * 100)
+    v = v.toFixed(2)
+    res.value = parseInt(v, 10)
+    return res
+  })
 
-        memo.datasets[0].data.push(entry.value);
-        memo.datasets[0].backgroundColor.push(entry.backgroundColor);
-        memo.datasets[0].hoverBackgroundColor.push(entry.hoverBackgroundColor);
-
-        return memo;
-    }, {
-        labels: [],
-        datasets: [{
-            label: label,
-            data: [],
-            backgroundColor: [],
-            hoverBackgroundColor: []
-        }]
-    });
-
-    return new Chart($output, {
-        type: type,
-        data: data,
-        options: options
-    });
+  CHARTS['types'] = drawChart('horizontalBar', $typesChart, dataset, 'Types', {
+    scales: {
+      yAxes: [{
+        stacked: true,
+        scaleLabel: {
+          display: true,
+          labelString: 'percent',
+        },
+        ticks: {
+          max: 100,
+          beginAtZero: true,
+        },
+      }],
+    },
+  })
 }
 
-function limit(dataset, limit) {
-    let data = dataset.slice(0, limit);
-    let rest = dataset.slice(limit);
+function drawChart (type, $target, dataset, label, options) {
+  let $output = $target.querySelectorAll('.js-output')
 
-    rest = rest.reduce((memo, entry) => ({
-        label: "Others",
-        value: memo.value + entry.value,
-        backgroundColor: memo.backgroundColor || entry.backgroundColor,
-        hoverBackgroundColor: memo.hoverBackgroundColor || entry.hoverBackgroundColor,
-    }), {
-        value: 0
-    });
+  let data = dataset.reduce((memo, entry) => {
+    memo.labels.push(entry.label)
 
-    data.push(rest);
+    memo.datasets[0].data.push(entry.value)
+    memo.datasets[0].backgroundColor.push(entry.backgroundColor)
+    memo.datasets[0].hoverBackgroundColor.push(entry.hoverBackgroundColor)
 
-    return data;
+    return memo
+  }, {
+    labels: [],
+    datasets: [{
+      label: label,
+      data: [],
+      backgroundColor: [],
+      hoverBackgroundColor: [],
+    }],
+  })
+
+  return new Chart($output, {
+    type: type,
+    data: data,
+    options: options,
+  })
 }
 
-function updateStats(entry) {
-    let year = entry.key;
+function limit (dataset, limit) {
+  let data = dataset.slice(0, limit)
+  let rest = dataset.slice(limit)
 
-    let totals = Common.getTotals(),
-        episodeTotals = Common.getEpisodeTotals()["tv"];
+  rest = rest.reduce((memo, entry) => ({
+    label: 'Others',
+    value: memo.value + entry.value,
+    backgroundColor: memo.backgroundColor || entry.backgroundColor,
+    hoverBackgroundColor: memo.hoverBackgroundColor || entry.hoverBackgroundColor,
+  }), {
+    value: 0,
+  })
 
-    $yearDetails.innerHTML = `<li><strong>Number of shows:</strong> ${totals[year]}</li>` +
-        `<li><strong>Average Episode Count:</strong> ${episodeTotals[year]}</li>`;
+  data.push(rest)
+
+  return data
 }
 
-function printOption(key) {
-    return `<option value="${key}">${key}</option>`;
+function updateStats (entry) {
+  let year = entry.key
+
+  let totals = Common.getTotals()
+  let episodeTotals = Common.getEpisodeTotals()['tv']
+
+  $yearDetails.innerHTML = `<li><strong>Number of shows:</strong> ${totals[year]}</li>` +
+        `<li><strong>Average Episode Count:</strong> ${episodeTotals[year]}</li>`
 }
 
-function enableForm() {
-    Common.setupDownloads();
-
-    $year.innerHTML = Object.keys(Common.getTotals())
-        .map(printOption)
-        .join("\n");
-    $year.value = Common.END_YEAR;
-    $year.removeAttribute("disabled");
-
-    updateCharts();
+function printOption (key) {
+  return `<option value="${key}">${key}</option>`
 }
 
-function run() {
-    $topGenresChart = Common.printChart("topGenresChart", `Top ${MAX_GENRE_ENTRIES} Genres`);
-    $topThemesChart = Common.printChart("topThemesChart", `Top ${MAX_THEME_ENTRIES} Themes`);
-    $typesChart = Common.printChart("typesChart", "Type of shows (%)");
+function enableForm () {
+  Common.setupDownloads()
 
-    $topGenres = document.getElementById("topGenres");
-    $topThemes = document.getElementById("topThemes");
-    $yearDetails = document.getElementById("yearDetails");
+  $year.innerHTML = Object.keys(Common.getTotals())
+    .map(printOption)
+    .join('\n')
+  $year.value = Common.END_YEAR
+  $year.removeAttribute('disabled')
 
-    $year = document.getElementById("year");
-
-    $year.addEventListener("change", onDatasetChange);
-
-    Common.init()
-        .then(enableForm);
+  updateCharts()
 }
 
-run();
+function run () {
+  $topGenresChart = Common.printChart('topGenresChart', `Top ${MAX_GENRE_ENTRIES} Genres`)
+  $topThemesChart = Common.printChart('topThemesChart', `Top ${MAX_THEME_ENTRIES} Themes`)
+  $typesChart = Common.printChart('typesChart', 'Type of shows (%)')
+
+  $topGenres = document.getElementById('topGenres')
+  $topThemes = document.getElementById('topThemes')
+  $yearDetails = document.getElementById('yearDetails')
+
+  $year = document.getElementById('year')
+
+  $year.addEventListener('change', onDatasetChange)
+
+  Common.init()
+    .then(enableForm)
+}
+
+run()
