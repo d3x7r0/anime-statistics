@@ -20,7 +20,7 @@
     "fix:css": "stylelint \"app/**/*.css\" --fix",
     "reload:couch": "node app/processor/reload_couch.js",
     "prebuild": "npm run clean",
-    "build": "npm run build:web && npm run build:data",
+    "build": "npm run build:data && npm run build:web",
     "build:web": "NODE_ENV=production parcel build --no-source-maps app/client/index.html --out-dir target",
     "build:data": "sh scripts/get_data.sh",
     "clean": "rm -rf target",
