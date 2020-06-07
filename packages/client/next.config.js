@@ -9,6 +9,7 @@ const TRANSPILED_MODULES = [
 const withTM = require('next-transpile-modules')(TRANSPILED_MODULES)
 
 const nextConfig = {
+  assetPrefix: process.env.SITE_BASE_DIR || '',
   exportTrailingSlash: true,
   experimental: {
     modern: true,
