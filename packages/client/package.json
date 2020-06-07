@@ -1,0 +1,74 @@
+{
+  "name": "@nbb-anime-statistics/client",
+  "version": "0.1.0",
+  "description": "Anime Statistics per Season (client)",
+  "main": "src/pages/index.js",
+  "scripts": {
+    "start": "npm run debug",
+    "build": "npm run build:web",
+    "build:web": "NEXT_TELEMETRY_DISABLED=1 NODE_ENV=production next build && next export -o ../../build",
+    "clean": "rm -rf ../../build/* .next",
+    "debug": "npm run debug:serve",
+    "debug:serve": "NODE_ENV=development next",
+    "serve": "cd ../../build && http-server -b -g",
+    "fix": "npm run fix:js && npm run fix:styles",
+    "fix:js": "eslint --fix --ext .js --ext .jsx src *.js",
+    "fix:styles": "stylelint src/**/*.sass src/**/*.scss src/**/*.css --fix",
+    "lint": "npm run lint:js && npm run lint:styles",
+    "lint:js": "eslint ${ESLINT_OPTS} --ext .js --ext .jsx src *.js",
+    "lint:styles": "stylelint src/**/*.sass src/**/*.scss src/**/*.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d3x7r0/anime-statistics.git"
+  },
+  "author": "Luís Nabais <luis@nabais.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/d3x7r0/anime-statistics/issues"
+  },
+  "homepage": "https://github.com/d3x7r0/anime-statistics#readme",
+  "browserslist": [
+    "> 0.2%",
+    "last 2 versions",
+    "Firefox ESR",
+    "not dead"
+  ],
+  "dependencies": {
+    "@nonsensebb/components": "github:d3x7r0/nonsensebb-components#v2020.6.3",
+    "slugify": "^1.4.0",
+    "chart.js": "^2.9.3",
+    "randomcolor": "^0.5.4",
+    "purecss": "^2.0.3",
+    "classnames": "^2.2.6",
+    "lodash": "^4.17.15",
+    "preact": "^10.4.4"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-export-default-from": "^7.10.1",
+    "@nonsensebb/eslint-config-preact": "^0.1.7",
+    "@nonsensebb/stylelint-config-scss": "^0.1.4",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.2.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.20.0",
+    "eslint-plugin-react-hooks": "^4.0.4",
+    "http-server": "^0.12.3",
+    "identity-obj-proxy": "^3.0.0",
+    "next": "^9.4.4",
+    "next-transpile-modules": "^3.3.0",
+    "preact-render-to-string": "^5.1.9",
+    "raw-loader": "^4.0.1",
+    "react": "github:preact-compat/react#1.0.0",
+    "react-dom": "github:preact-compat/react-dom#1.0.0",
+    "react-image-lightbox": "^5.1.1",
+    "react-ssr-prepass": "npm:preact-ssr-prepass@^1.0.1",
+    "sass": "^1.26.8",
+    "stylelint": "^13.6.0",
+    "stylelint-order": "^4.1.0",
+    "stylelint-scss": "^3.17.2",
+    "use-persisted-state": "^0.3.0"
+  }
+}

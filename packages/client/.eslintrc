@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "@nonsensebb/eslint-config-preact"
+  ],
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "shared-node-browser": true
+  },
+  "ignorePatterns": [
+    "build/"
+  ]
+}

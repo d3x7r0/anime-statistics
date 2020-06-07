@@ -1,0 +1,41 @@
+{
+  "name": "@nbb-anime-statistics/scapper",
+  "version": "0.1.0",
+  "description": "Anime Statistics per Season (Scrapper)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "reload:couch": "node reload_couch.js",
+    "lint": "npm run lint:js",
+    "lint:js": "eslint ${ESLINT_OPTS} --ext .js *.js **/*.js",
+    "fix": "npm run fix:js",
+    "fix:js": "eslint --fix --ext .js *.js **/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d3x7r0/anime-statistics.git"
+  },
+  "author": "Luís Nabais <luis@nabais.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/d3x7r0/anime-statistics/issues"
+  },
+  "homepage": "https://github.com/d3x7r0/anime-statistics#readme",
+  "dependencies": {
+    "@sukurapa/writer-couch": "^0.4.0",
+    "@sukurapa/writer-csv": "^0.4.0",
+    "nano": "^8.2.2",
+    "node-fetch": "^2.6.0",
+    "rc": "^1.2.8",
+    "slugify": "^1.4.0",
+    "sukurapa": "^0.4.1",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "@nonsensebb/eslint-config-node": "^0.1.7",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.2.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-promise": "^4.2.1"
+  }
+}

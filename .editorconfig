@@ -7,7 +7,7 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.{yml, yaml, js, css, html, json, json.j2}]
+[*.{yml, yaml, js, jsx, ts, tsx, css, scss, sass, less, html, json, json.j2, gql, graphql}]
 indent_style = space
 indent_size = 2
 

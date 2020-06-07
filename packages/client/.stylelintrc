@@ -1,0 +1,3 @@
+{
+  "extends": "@nonsensebb/stylelint-config-scss"
+}

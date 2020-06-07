@@ -1,7 +1,8 @@
 node_modules
-.cache
 out.csv
 stats.csv
-target
+build
 .nbb-anime-statisticsrc
-data
+.next
+*.log
+.env.*

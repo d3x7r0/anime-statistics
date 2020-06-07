@@ -1,0 +1,5 @@
+{
+  "extends": [
+    "@nonsensebb/eslint-config-node"
+  ]
+}
