@@ -2,7 +2,7 @@
 import { h } from 'preact'
 import Link from 'next/link'
 
-import { TITLES } from '../../config'
+import { PATHS, TITLES } from '../../config'
 
 function SiteHeader() {
   return (
@@ -14,7 +14,7 @@ function SiteHeader() {
       <ul className="pure-menu-list">
         <li className="pure-menu-item">
           <Link
-            href="/"
+            href={PATHS.GENRE}
             passHref
           >
             <a className="pure-menu-link">
@@ -24,7 +24,7 @@ function SiteHeader() {
         </li>
         <li className="pure-menu-item">
           <Link
-            href="/year"
+            href={PATHS.YEAR}
             passHref
           >
             <a className="pure-menu-link">
@@ -34,7 +34,7 @@ function SiteHeader() {
         </li>
         <li className="pure-menu-item">
           <Link
-            href="/types"
+            href={PATHS.TYPES}
             passHref
           >
             <a className="pure-menu-link">

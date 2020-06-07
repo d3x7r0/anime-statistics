@@ -18,4 +18,17 @@ export const TITLES = {
   TYPES: 'Types',
 }
 
+const BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || '').replace(/\/$/, "")
+
+export const PATHS = {
+  GENRE: cleanURL('/'),
+  YEAR: cleanURL('/year'),
+  TYPES: cleanURL('/types'),
+}
+
+function cleanURL(url = '') {
+  console.debug(BASE_URL)
+  return `${BASE_URL}${url}`
+}
+
 export const TITLE_SEPARATOR = ' :: '
