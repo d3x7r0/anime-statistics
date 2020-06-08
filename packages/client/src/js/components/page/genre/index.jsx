@@ -3,6 +3,7 @@ import { h } from 'preact'
 import { useCallback, useMemo, useState } from 'preact/hooks'
 import { uniq, without } from 'lodash'
 
+import { MAX_GENRE_ENTRIES } from '../../../config'
 import Chart from '../../atom/chart'
 import CategoryList from '../../molecules/category-list'
 import {
@@ -12,9 +13,9 @@ import {
   buildRelativeChartOptions,
 } from '../../../charts/home'
 
-import { buildDataDataset, buildEpisodeDataset } from './data'
+import { buildDataDataset, buildEpisodeDataset, calculateTotals, getTop } from './data'
 
-function Home(props) {
+function GenrePage(props) {
   const {
     totals,
     episodeTotals,
@@ -24,7 +25,9 @@ function Home(props) {
     episodeData,
   } = props
 
-  const [activeGenres, setActiveGenres] = useState([])
+  const totalsPerType = useMemo(() => calculateTotals(data), [data])
+
+  const [activeGenres, setActiveGenres] = useState(() => getTop(totalsPerType, MAX_GENRE_ENTRIES, genres))
   const [activeThemes, setActiveThemes] = useState([])
 
   const onGenreChange = useCallback((genre, selected) => {
@@ -149,7 +152,7 @@ function Home(props) {
         <div className="form-select pure-u-1 pure-u-md-1-2">
           <CategoryList
             label="Genres"
-            entries={genres}
+            entries={prepareEntries(genres, totalsPerType)}
             selected={activeGenres}
             onChange={onGenreChange}
             onToggleAll={onGenreToggle}
@@ -159,7 +162,7 @@ function Home(props) {
         <div className="form-select pure-u-1 pure-u-md-1-2">
           <CategoryList
             label="Themes"
-            entries={themes}
+            entries={prepareEntries(themes, totalsPerType)}
             selected={activeThemes}
             onChange={onThemeChange}
             onToggleAll={onThemeToggle}
@@ -170,4 +173,17 @@ function Home(props) {
   )
 }
 
-export default Home
+function prepareEntries(entries = [], totals = {}) {
+  return entries
+    .map(entry => ({
+      ...entry,
+      label: buildLabel(entry, totals),
+    }))
+    .sort((a, b) => totals[b.key] - totals[a.key])
+}
+
+function buildLabel(theme, totalsPerType) {
+  return `${theme.label} (${totalsPerType[theme.key]} Shows)`
+}
+
+export default GenrePage

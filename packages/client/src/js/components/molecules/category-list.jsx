@@ -55,7 +55,7 @@ function CategoryEntry(props) {
              onChange={(e) => onChange(e.target.value, e.target.checked)}
              value={value}
              id={id} />
-      {label}
+      {' '}{label}
     </label>
   )
 }

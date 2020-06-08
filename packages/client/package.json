@@ -50,7 +50,7 @@
     "@nonsensebb/stylelint-config-scss": "^0.1.4",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.2.0",
-    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-import": "^2.21.1",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.20.0",

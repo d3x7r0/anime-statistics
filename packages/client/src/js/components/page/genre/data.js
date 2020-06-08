@@ -41,6 +41,29 @@ function calculateAverages(data) {
   return data.map(value => Math.round(value['sum'] / value['count'] || 0))
 }
 
+export function calculateTotals(data = []) {
+  const processedData = groupData(data)
+
+  return Object.fromEntries(
+    Object.entries(processedData).map(
+      ([key, values]) => [
+        key,
+        values.reduce((memo, entry) => memo + entry.value, 0),
+      ],
+    ),
+  )
+}
+
+export function getTop(totals = {}, count, types = []) {
+  const keys = types.map(entry => entry.key)
+
+  return Object.entries(totals)
+    .filter(entry => keys.includes(entry[0]))
+    .sort((a, b) => b[1] - a[1])
+    .map(entry => entry[0])
+    .slice(0, count)
+}
+
 export function buildDataDataset(data = [], types = []) {
   const processedData = groupData(
     filterData(data, types.map(entry => entry.key)),
