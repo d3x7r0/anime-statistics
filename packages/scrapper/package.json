@@ -27,15 +27,15 @@
     "nano": "^8.2.2",
     "node-fetch": "^2.6.0",
     "rc": "^1.2.8",
-    "slugify": "^1.4.0",
+    "slugify": "^1.4.4",
     "sukurapa": "^0.4.1",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "@nonsensebb/eslint-config-node": "^0.1.7",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.2.0",
-    "eslint-plugin-import": "^2.20.2",
+    "eslint": "^7.3.1",
+    "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-promise": "^4.2.1"
   }
 }
