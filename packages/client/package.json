@@ -36,13 +36,13 @@
   ],
   "dependencies": {
     "@nonsensebb/components": "github:d3x7r0/nonsensebb-components#v2020.6.3",
-    "slugify": "^1.4.4",
     "chart.js": "^2.9.3",
-    "randomcolor": "^0.5.4",
-    "purecss": "^2.0.3",
     "classnames": "^2.2.6",
-    "lodash": "^4.17.15",
-    "preact": "^10.4.5"
+    "lodash": "^4.17.19",
+    "preact": "^10.4.5",
+    "purecss": "^2.0.3",
+    "randomcolor": "^0.5.4",
+    "slugify": "^1.4.4"
   },
   "devDependencies": {
     "@babel/plugin-proposal-export-default-from": "^7.10.4",
