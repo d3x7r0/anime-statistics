@@ -41,7 +41,7 @@
     "randomcolor": "^0.5.4",
     "purecss": "^2.0.3",
     "classnames": "^2.2.6",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "preact": "^10.4.5"
   },
   "devDependencies": {
