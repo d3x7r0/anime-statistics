@@ -21,7 +21,7 @@
     "lint": "lerna run lint",
     "fix": "lerna run fix",
     "prebuild": "npm run clean",
-    "build": "lerna run build",
+    "build": "lerna run build --stream",
     "clean": "lerna run clean"
   },
   "devDependencies": {
