@@ -1,0 +1,10 @@
+{
+  "writer": {
+    "name": "couch",
+    "options": {
+      "connection": "http://localhost:5984",
+      "storeName": "ann",
+      "deleteOnStart": true
+    }
+  }
+}
