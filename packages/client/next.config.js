@@ -19,6 +19,9 @@ const nextConfig = {
   cssLoaderOptions: {
     url: false,
   },
+  env: {
+    NEXT_PUBLIC_BUILD_DATE: Date.now(),
+  },
   webpack(config) {
     TRANSPILED_MODULES.forEach((moduleName) => {
       const pkg = require(resolve(__dirname, '.', 'node_modules', moduleName, 'package.json'))

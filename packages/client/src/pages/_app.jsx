@@ -47,6 +47,10 @@ function WebsiteApp({ Component, pageProps }) {
           <Component {...pageProps} />
         )}
       </BaseLayout>
+
+      <footer className="footer">
+        <p>Updated: {new Date(process.env.NEXT_PUBLIC_BUILD_DATE).toLocaleDateString()}</p>
+      </footer>
     </>
   )
 }

@@ -4,6 +4,7 @@
 .chart,
 .form-select,
 .year-details,
+.footer,
 .top {
   box-sizing: border-box;
   padding: 1em;
@@ -24,4 +25,9 @@
   font-size: 1em;
   font-weight: normal;
   line-height: 1.3;
+}
+
+.footer {
+  font-size: 0.9em;
+  text-align: right;
 }

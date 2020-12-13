@@ -27,7 +27,6 @@ export const PATHS = {
 }
 
 function cleanURL(url = '') {
-  console.debug(BASE_URL)
   return `${BASE_URL}${url}`
 }
 
