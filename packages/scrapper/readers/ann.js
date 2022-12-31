@@ -22,8 +22,9 @@ const RETRY_DELAY = 1000
 const parseXMLString = promisify(xml2js.parseString)
 
 class ANNReader {
-  constructor({ startPage = START_PAGE } = {}) {
+  constructor({ startPage = START_PAGE, headers } = {}) {
     this._startPage = startPage
+    this._headers = headers || {}
   }
 
   prepare() {
@@ -109,7 +110,7 @@ async function fetchEntries(ids) {
 async function fetchXML(url) {
   console.debug(`[${TAG}] Fetching ${url}`)
 
-  const res = await doGet(url)
+  const res = await doGet(url, { headers: this._headers })
 
   return parseXMLString(
     await res.text(),
@@ -138,10 +139,10 @@ function onEntryError(id, err) {
   return [{ 'annId': id }]
 }
 
-async function doGet(url, count) {
+async function doGet(url, options, count) {
   count = count || 0
 
-  const res = await fetch(url)
+  const res = await fetch(url, options)
 
   if (res.ok) {
     return res
@@ -161,7 +162,7 @@ async function doGet(url, count) {
 
   await Utils.delay(delay)()
 
-  return doGet(url, count + 1)
+  return doGet(url, options, count + 1)
 }
 
 const DATE_REGEX = /(\d{4})-?(\d{2})?-?(\d{2})?(?: to (\d{4})-?(\d{2})?-?(\d{2})?)?/
