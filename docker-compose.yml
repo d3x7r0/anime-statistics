@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  couchdb:
+    image: "couchdb:2.3"
+    container_name: "couchdb"
+    restart: on-failure
+    ports:
+      - "5984:5984"
+    volumes:
+      - "./volumes/couch:/opt/couchdb/data:delegated"
