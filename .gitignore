@@ -1,8 +1,7 @@
 node_modules
 out.csv
 stats.csv
-build
+dist
 .nbb-anime-statisticsrc
-.next
 *.log
 .env.*

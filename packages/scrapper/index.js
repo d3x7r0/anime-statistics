@@ -1,18 +1,8 @@
 const CONFIG = require('./config')
-
-// eslint-disable-next-line import/order
-const Sukurapa = require('sukurapa')
+const Sukurapa = require('./lib/runner')
 
 function buildWriter() {
-  let Constructor
-
-  if (CONFIG.writer.name === 'couch') {
-    Constructor = require('@sukurapa/writer-couch')
-  }
-
-  if (CONFIG.writer.name === 'csv') {
-    Constructor = require('@sukurapa/writer-csv')
-  }
+  const Constructor = require(`./readers/${CONFIG.writer.name}`)
 
   if (!Constructor) throw new Error('Unknown writer')
 

@@ -1,4 +1,3 @@
-/** @jsx h */
 import { h } from 'preact'
 import { useCallback, useMemo, useState } from 'preact/hooks'
 import { uniq, without } from 'lodash'

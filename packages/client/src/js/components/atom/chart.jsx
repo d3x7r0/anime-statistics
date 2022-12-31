@@ -1,4 +1,3 @@
-/** @jsx h */
 import { h } from 'preact'
 import { useCallback, useLayoutEffect, useRef } from 'preact/hooks'
 import Chart from 'chart.js'

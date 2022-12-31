@@ -9,6 +9,35 @@
     "shared-node-browser": true
   },
   "ignorePatterns": [
-    "build/"
-  ]
+    "dist/"
+  ],
+  "rules": {
+    "import/named": "off",
+    "import/namespace": "off",
+    "import/no-deprecated": "off",
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off",
+    "no-unused-vars": ["error", {
+      "varsIgnorePattern": "h"
+    }]
+  },
+  "settings": {
+    "import/core-modules": [ "react", "react-dom" ]
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true,
+      "impliedStrict": true,
+      "jsx": true
+    },
+    "requireConfigFile": false,
+    "babelOptions": {
+      "plugins": [
+        "@babel/plugin-syntax-class-properties",
+        "@babel/plugin-syntax-jsx"
+      ]
+    }
+  }
 }

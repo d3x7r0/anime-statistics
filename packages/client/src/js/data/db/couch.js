@@ -1,3 +1,5 @@
+import fetch from 'isomorphic-fetch'
+
 import { END_YEAR, START_YEAR } from '../../config'
 
 async function fetchDB(design, view, startKey, endKey, opts = {}) {
