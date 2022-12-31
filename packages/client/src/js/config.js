@@ -1,5 +1,5 @@
-export const START_YEAR = parseInt(process.env.NEXT_PUBLIC_START_YEAR, 10)
-export const END_YEAR = parseInt(process.env.NEXT_PUBLIC_END_YEAR, 10)
+export const START_YEAR = parseInt(import.meta.env.VITE_START_YEAR, 10)
+export const END_YEAR = parseInt(import.meta.env.VITE_END_YEAR, 10)
 
 export const ACTIVE_YEARS = Array.from(
   { length: END_YEAR - START_YEAR + 1 },
@@ -18,7 +18,7 @@ export const TITLES = {
   TYPES: 'Types',
 }
 
-const BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || '').replace(/\/$/, "")
+const BASE_URL = (import.meta.env.VITE_BASE_URL || '').replace(/\/$/, "")
 
 export const PATHS = {
   GENRE: cleanURL('/'),
@@ -31,3 +31,6 @@ function cleanURL(url = '') {
 }
 
 export const TITLE_SEPARATOR = ' :: '
+
+// eslint-disable-next-line no-undef
+export const BUILD_DATE = __BUILD_DATE__

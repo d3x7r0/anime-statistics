@@ -1,6 +1,6 @@
 {
   "name": "nbb-anime-statistics",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Anime Statistics per Season",
   "repository": {
     "type": "git",
@@ -13,18 +13,23 @@
   },
   "homepage": "https://github.com/d3x7r0/anime-statistics#readme",
   "scripts": {
-    "start": "npm run start:scrapper",
-    "debug": "npm run start:client",
-    "start:client": "cd packages/client && npm run start",
-    "start:scrapper": "cd packages/scrapper && npm run start",
-    "serve": "cd packages/client && npm run serve",
-    "lint": "lerna run lint",
-    "fix": "lerna run fix",
+    "start:client": "npm run -w packages/client start",
+    "start:scrapper": "npm run -w packages/scrapper start",
+    "serve": "npm run -w packages/client serve",
+    "lint": "npm run -ws lint",
+    "fix": "npm run -ws fix",
     "prebuild": "npm run clean",
-    "build": "lerna run build --stream",
-    "clean": "lerna run clean"
+    "build": "npm run -ws --if-present build --stream",
+    "clean": "npm run -ws --if-present clean"
   },
+  "workspaces": [
+    "packages/scrapper",
+    "packages/client"
+  ],
   "devDependencies": {
-    "lerna": "^3.22.1"
+    "@babel/eslint-parser": "^7.19.1",
+    "eslint": "^8.30.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-promise": "^6.1.1"
   }
 }

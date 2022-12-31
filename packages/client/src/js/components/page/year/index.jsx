@@ -1,4 +1,3 @@
-/** @jsx h */
 import { h } from 'preact'
 import { useMemo, useState } from 'preact/hooks'
 

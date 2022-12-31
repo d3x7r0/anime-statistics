@@ -1,6 +1,4 @@
-/** @jsx h */
 import { h } from 'preact'
-import Link from 'next/link'
 
 import { PATHS, TITLES } from '../../config'
 
@@ -13,34 +11,19 @@ function SiteHeader() {
 
       <ul className="pure-menu-list">
         <li className="pure-menu-item">
-          <Link
-            href={PATHS.GENRE}
-            passHref
-          >
-            <a className="pure-menu-link">
-              {TITLES.GENRE}
-            </a>
-          </Link>
+          <a href={PATHS.GENRE} className="pure-menu-link">
+            {TITLES.GENRE}
+          </a>
         </li>
         <li className="pure-menu-item">
-          <Link
-            href={PATHS.YEAR}
-            passHref
-          >
-            <a className="pure-menu-link">
-              {TITLES.YEAR}
-            </a>
-          </Link>
+          <a href={PATHS.YEAR} className="pure-menu-link">
+            {TITLES.YEAR}
+          </a>
         </li>
         <li className="pure-menu-item">
-          <Link
-            href={PATHS.TYPES}
-            passHref
-          >
-            <a className="pure-menu-link">
-              {TITLES.TYPES}
-            </a>
-          </Link>
+          <a href={PATHS.TYPES} className="pure-menu-link">
+            {TITLES.TYPES}
+          </a>
         </li>
       </ul>
     </header>

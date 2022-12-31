@@ -1,6 +1,6 @@
 {
   "name": "@nbb-anime-statistics/scapper",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Anime Statistics per Season (Scrapper)",
   "main": "index.js",
   "scripts": {
@@ -22,20 +22,13 @@
   },
   "homepage": "https://github.com/d3x7r0/anime-statistics#readme",
   "dependencies": {
-    "@sukurapa/writer-couch": "^0.4.0",
-    "@sukurapa/writer-csv": "^0.4.0",
     "nano": "^9.0.1",
     "node-fetch": "^2.6.1",
     "rc": "^1.2.8",
     "slugify": "^1.4.6",
-    "sukurapa": "^0.4.1",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
-    "@nonsensebb/eslint-config-node": "^0.2.0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.15.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-promise": "^4.2.1"
+    "@nonsensebb/eslint-config-node": "^0.7.0"
   }
 }

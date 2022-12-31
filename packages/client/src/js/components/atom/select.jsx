@@ -1,6 +1,5 @@
-/** @jsx h */
 import { h } from 'preact'
-import classNames from 'classnames'
+import classNames from 'clsx'
 
 export default function Select(props) {
   const {
