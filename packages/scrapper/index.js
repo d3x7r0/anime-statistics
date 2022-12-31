@@ -2,7 +2,7 @@ const CONFIG = require('./config')
 const Sukurapa = require('./lib/runner')
 
 function buildWriter() {
-  const Constructor = require(`./readers/${CONFIG.writer.name}`)
+  const Constructor = require(`./writers/${CONFIG.writer.name}`)
 
   if (!Constructor) throw new Error('Unknown writer')
 

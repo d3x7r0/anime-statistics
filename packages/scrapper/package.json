@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "build": "node index.js",
     "reload:couch": "node reload_couch.js",
     "lint": "npm run lint:js",
     "lint:js": "eslint ${ESLINT_OPTS} --ext .js *.js **/*.js",

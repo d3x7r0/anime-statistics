@@ -10,8 +10,8 @@ const Utils = require('../utils')
 
 const TAG = 'ANN'
 
-const LIST_URL = (limit, offset) => `http://www.animenewsnetwork.com/encyclopedia/reports.xml?id=155&nlist=${limit}&nskip=${offset}&type=anime`
-const SINGLE_URL = 'http://cdn.animenewsnetwork.com/encyclopedia/api.xml?'
+const LIST_URL = (limit, offset) => `https://www.animenewsnetwork.com/encyclopedia/reports.xml?id=155&nlist=${limit}&nskip=${offset}&type=anime`
+const SINGLE_URL = 'https://cdn.animenewsnetwork.com/encyclopedia/api.xml?'
 const START_PAGE = 0
 const PAGE_SIZE = 20
 const MAX_EPISODES_PER_YEAR = 52
@@ -154,7 +154,10 @@ async function doGet(url, count) {
   const attempt = count + 1
   const delay = RETRY_DELAY * (attempt)
 
-  console.info(`[${TAG}] Delaying request by ${delay}ms due to error (attempt ${attempt})`)
+  console.info(
+    `[${TAG}] Delaying request by ${delay}ms due to error (attempt ${attempt})`,
+    { status: res.status, statusText: res.statusText }
+  )
 
   await Utils.delay(delay)()
 

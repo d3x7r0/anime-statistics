@@ -13,13 +13,13 @@
   },
   "homepage": "https://github.com/d3x7r0/anime-statistics#readme",
   "scripts": {
-    "start:client": "npm run -w packages/client start",
-    "start:scrapper": "npm run -w packages/scrapper start",
-    "serve": "npm run -w packages/client serve",
+    "client": "npm run -w packages/client start",
+    "client:serve": "npm run -w packages/client serve",
+    "scrapper": "npm run -w packages/scrapper start",
     "lint": "npm run -ws lint",
     "fix": "npm run -ws fix",
     "prebuild": "npm run clean",
-    "build": "npm run -ws --if-present build --stream",
+    "build": "npm run -w packages/scrapper build && npm run -w packages/client build",
     "clean": "npm run -ws --if-present clean"
   },
   "workspaces": [
