@@ -1,10 +1,10 @@
 // http://www.animenewsnetwork.com/encyclopedia/reports.xml?id=155&nlist=50&nskip=0&type=anime
 // http://cdn.animenewsnetwork.com/encyclopedia/api.xml?title=1&title=2... max: 50
 
-const fetch = require('node-fetch')
+const fetch = require('isomorphic-fetch')
 const xml2js = require('xml2js')
 const slugify = require('slugify')
-const { promisify } = require('util')
+const { promisify } = require('node:util')
 
 const Utils = require('../utils')
 

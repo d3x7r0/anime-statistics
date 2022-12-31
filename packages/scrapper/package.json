@@ -23,7 +23,7 @@
   "homepage": "https://github.com/d3x7r0/anime-statistics#readme",
   "dependencies": {
     "nano": "^9.0.1",
-    "node-fetch": "^2.6.1",
+    "isomorphic-fetch": "^3.0.0",
     "rc": "^1.2.8",
     "slugify": "^1.4.6",
     "xml2js": "^0.4.23"
