@@ -1,9 +1,11 @@
 // http://www.animenewsnetwork.com/encyclopedia/reports.xml?id=155&nlist=50&nskip=0&type=anime
 // http://cdn.animenewsnetwork.com/encyclopedia/api.xml?title=1&title=2... max: 50
 
+const castArray = require('lodash/castArray')
+const compact = require('lodash/compact')
 const fetch = require('isomorphic-fetch')
-const xml2js = require('xml2js')
 const slugify = require('slugify')
+const xml2js = require('xml2js')
 const { promisify } = require('node:util')
 
 const Utils = require('../utils')
@@ -63,7 +65,7 @@ async function fetchPage(page) {
 
   const data = await Utils.queue(fetchXML, url)
 
-  return ensureArray(data && data['report'] && data['report']['item'])
+  return castArray(data?.['report']?.['item'] ?? undefined)
     .map(item => item['id'])
 }
 
@@ -98,13 +100,17 @@ async function fetchAndProcess(id) {
 }
 
 async function fetchEntries(ids) {
-  const params = ensureArray(ids)
-    .map(id => `title=${id}`)
-    .join('&')
+  const url = new URL(SINGLE_URL)
 
-  const data = await Utils.queue(fetchXML, SINGLE_URL + params)
+  castArray(ids ?? [])
+    .forEach(id => url.searchParams.append('title', id))
 
-  return ensureArray(data && data['ann'] && data['ann']['anime'])
+  const data = await Utils.queue(fetchXML, url.toString())
+
+  return [
+    ...castArray(data?.['ann']?.['anime'] ?? []),
+    ...castArray(data?.['ann']?.['manga'] ?? []),
+  ]
 }
 
 async function fetchXML(url) {
@@ -170,12 +176,12 @@ const DATE_REGEX = /(\d{4})-?(\d{2})?-?(\d{2})?(?: to (\d{4})-?(\d{2})?-?(\d{2})
 function processEntry(data) {
   const res = data['$']
 
-  const info = ensureArray(data['info'])
+  const info = castArray(data['info'] ?? [])
 
   res['annId'] = res['id']
-  res['Vintage'] = getXMLValue(ensureArray(data['info']), 'Vintage')
+  res['Vintage'] = getXMLValue(info, 'Vintage')
 
-  if (res['Vintage'] && res['Vintage'].length) {
+  if (res['Vintage']?.length) {
     const date = pickDate(res['Vintage'])
 
     if (date) {
@@ -198,9 +204,9 @@ function processEntry(data) {
   res['Runtime'] = guessRuntime(res)
 
   if (data['related-prev']) {
-    const relations = data['related-prev']
-      .map(entry => entry['$'] && entry['$']['rel'] && entry['$']['rel'].toLowerCase())
-      .filter(entry => !!entry)
+    const relations = compact(
+      data['related-prev'].map(entry => entry?.['$']?.['rel']?.toLowerCase())
+    )
 
     res['sequel'] = contains(relations, item => item.indexOf('sequel') !== -1)
     res['adaptation'] = contains(relations, item => item.indexOf('adapted') !== -1)
@@ -210,13 +216,13 @@ function processEntry(data) {
     res['remake'] = contains(relations, item => item.indexOf('remake') !== -1 || item.indexOf('alternate retelling') !== -1)
 
     // store to check if we missed something after a full run
-    res['related-prev'] = data['related-prev'].map(entry => entry['$'] && entry['$']['rel'])
+    res['related-prev'] = data['related-prev'].map(entry => entry['$']?.['rel'])
   }
 
   if (res['adaptation']) {
     res['sources'] = data['related-prev']
       .map(entry => entry['$'])
-      .filter(entry => entry.rel && entry.rel.indexOf('adapted') !== -1)
+      .filter(entry => entry?.rel?.indexOf('adapted') !== -1)
       .map(entry => entry.id)
   }
 
@@ -224,24 +230,27 @@ function processEntry(data) {
 }
 
 function guessRuntime(res) {
-  let runtime = res['Runtime']
+  const runtime = res['Runtime']
 
-  if (!runtime && res['type']) {
-    const type = (res['type'] || '').toLowerCase()
-
-    // TODO: find proper values
-    if (type === 'tv') {
-      runtime = 24
-    } else if (type === 'ona') {
-      runtime = 22
-    } else if (type === 'ova' || type === 'oav') {
-      runtime = 40
-    } else if (type === 'movie') {
-      runtime = 90
-    }
+  if (runtime || !res['type']) {
+    return runtime
   }
 
-  return runtime
+  const type = res['type']?.toLowerCase()
+
+  switch (type) {
+    case 'tv':
+      return 24
+    case 'ona':
+      return 22
+    case 'ova':
+    case 'oav':
+      return 40
+    case 'movie':
+      return 90
+    default:
+      return runtime
+  }
 }
 
 function pickDate(vintage) {
@@ -274,19 +283,13 @@ async function processRelations(entries) {
 
     p.push(
       fetchEntries(sub).then(
-        raw => {
-          const data = raw['ann'] || {}
-
-          return Object.keys(data)
-            .map(key => data[key] || [])
-            .reduce((memo, entry) => memo.concat(entry), [])
-            // We need to filter entries because sometimes an id is non-existing
-            // despite the fact that it's listed as related
-            .map(entry => entry['$'])
-            .filter(entry => !!entry)
-        },
+        // We need to filter entries because sometimes an id is non-existing
+        // despite the fact that it's listed as related
+        data =>  compact(
+          data.map(entry => entry?.['$']),
+        ),
         err => {
-          console.warn(`[${TAG}] Error fetching related entry [${sub}]. \nError: ${err.message}`)
+          console.warn(`[${TAG}] Error fetching related entries [${sub}]`, err)
           return []
         },
       ),
@@ -295,20 +298,20 @@ async function processRelations(entries) {
 
   const data = await Promise.all(p)
 
-  const map = data
-    .reduce((memo, entry) => memo.concat(entry || []), [])
+  const sourceMap = data
+    .flatMap(entry => entry || [])
     .reduce((memo, data) => {
-      memo[data['id']] = data['type'] || data['precision']
+      if (data) {
+        memo.set(data['id'], data['type'] || data['precision'])
+      }
       return memo
-    }, {})
+    }, new Map())
 
-  entries.forEach(entry => {
-    if (entry.sources) {
-      entry.sources = entry.sources
-        .map(source => map[source] || 'unknown')
-        .filter(entry => !!entry)
-    }
-  })
+  for (const entry of entries) {
+    entry.sources = compact(
+      entry.sources?.map(source => sourceMap.get(source) || 'unknown')
+    )
+  }
 
   return entries
 }
@@ -393,10 +396,11 @@ function contains(arr, fn, ctx) {
 }
 
 function getXMLValue(data, value) {
-  return data
-    .filter(i => i['$']['type'] === value)
-    .map(d => d['_'])
-    .filter(v => !!v)
+  return compact(
+    data
+      .filter(i => i['$']['type'] === value)
+      .map(d => d['_'])
+  )
 }
 
 const KNOWN_SYNONYMS = {
@@ -447,12 +451,8 @@ function cleanupGenre(entry) {
 }
 
 function flatten(arr) {
-  return ensureArray(arr)
+  return castArray(arr)
     .reduce((memo, entry) => memo.concat(entry || []), [])
-}
-
-function ensureArray(arr) {
-  return [].concat(arr || [])
 }
 
 module.exports = ANNReader

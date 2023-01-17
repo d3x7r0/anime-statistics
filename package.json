@@ -22,6 +22,9 @@
     "build": "npm run -w packages/scrapper build && npm run -w packages/client build",
     "clean": "npm run -ws --if-present clean"
   },
+  "engines": {
+    "node": ">= 16"
+  },
   "workspaces": [
     "packages/scrapper",
     "packages/client"
