@@ -24,27 +24,34 @@ const RETRY_DELAY = 1000
 const parseXMLString = promisify(xml2js.parseString)
 
 class ANNReader {
+  #startPage = START_PAGE
+  #headers = {}
+
+  #page = START_PAGE
+  #continue = false
+
   constructor({ startPage = START_PAGE, headers } = {}) {
-    this._startPage = startPage
-    this._headers = headers || {}
+    this.#startPage = startPage
+    this.#headers = headers || {}
   }
 
   prepare() {
-    this._page = this._startPage
-    this._continue = true
+    this.#page = this.#startPage
+    this.#continue = true
   }
 
   async next() {
-    const data = await getPage(this._page)
+    const data = await getPage(this.#page)
 
-    this._continue = data.length >= PAGE_SIZE
-    this._page++
+    this.#continue = data.length >= PAGE_SIZE
+    this.#page++
 
     return data
   }
 
   hasNext() {
-    return this._continue
+    //return this.#continue
+    return this.#page <= 25
   }
 
   finish() {
@@ -226,6 +233,13 @@ function processEntry(data) {
       .map(entry => entry.id)
   }
 
+  res['Studio'] = compact(
+    data['credit']
+      ?.filter(entry => entry?.task?.includes('Animation Production'))
+      ?.flatMap(entry => entry?.company)
+      ?.map(d => d['_'])
+  )
+
   return res
 }
 
@@ -265,10 +279,12 @@ function pickDate(vintage) {
 }
 
 async function processRelations(entries) {
-  const ids = entries
-    .map(entry => entry.sources)
-    .reduce((memo, sources) => memo.concat(sources || []), [])
-    .filter((entry, idx, arr) => arr.indexOf(entry) === idx)
+  const ids = Array.from(
+    entries
+      .flatMap(entry => entry.sources || [])
+      .reduce((memo, entry) => memo.add(entry), new Set())
+      .values()
+  )
 
   if (ids.length === 0) {
     return entries
@@ -332,7 +348,7 @@ function multiplyEntries(res) {
 
     let i = 0
     for (let y = startYear; y <= endYear; y++) {
-      const d = Object.assign({}, res)
+      const d = { ...res }
       d['year'] = parseInt(y)
       d['Episodes'] = eps
 

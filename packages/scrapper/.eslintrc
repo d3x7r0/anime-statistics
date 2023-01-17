@@ -3,6 +3,6 @@
     "@nonsensebb/eslint-config-node"
   ],
   "parserOptions": {
-    "ecmaVersion": 2020
+    "ecmaVersion": 2022
   }
 }

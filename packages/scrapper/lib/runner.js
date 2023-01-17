@@ -71,10 +71,11 @@ class Runner {
 
   _cleanupData(data = []) {
     return data
-      .filter(entry => entry && entry.id !== undefined)
-      .map(entry => Object.assign(entry, {
+      .filter(entry => entry?.id !== undefined)
+      .map(entry => ({
+        ...entry,
         timestamp: this._stats.start,
-        id: entry.id
+        id: entry.id,
       }))
   }
 

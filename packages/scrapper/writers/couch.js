@@ -7,6 +7,16 @@ const STATS_KEY_NAME = 'STATS'
 const DEFAULT_DELETE_STORE = false
 
 class CouchWriter {
+  #storeName = null
+  #connection = null
+
+  #statsRevId = undefined
+
+  #deleteOnStart = DEFAULT_DELETE_STORE
+
+  #nano = undefined
+  #db = undefined
+
   constructor({
     connection,
     storeName,
@@ -17,41 +27,39 @@ class CouchWriter {
       throw new Error(`[${TAG}] Missing connection or store name`)
     }
 
-    this._storeName = storeName
-    this._connection = connection
+    this.#storeName = storeName
+    this.#connection = connection
 
-    this._statsRevId = undefined
-
-    this._deleteOnStart = deleteOnStart
+    this.#deleteOnStart = deleteOnStart
   }
 
   async prepare() {
-    console.info(`[${TAG}] Preparing output couchdb store "${this._storeName}"`)
+    console.info(`[${TAG}] Preparing output couchdb store "${this.#storeName}"`)
 
-    this._nano = nano(`${this._connection}`)
+    this.#nano = nano(`${this.#connection}`)
 
-    this._db = this._nano.use(this._storeName)
+    this.#db = this.#nano.use(this.#storeName)
 
-    if (this._deleteOnStart) {
+    if (this.#deleteOnStart) {
       try {
-        await this._nano.db.destroy(this._storeName)
+        await this.#nano.db.destroy(this.#storeName)
       } catch (err) {
         if (err.error !== 'not_found') throw err
       }
 
-      await this._nano.db.create(this._storeName)
+      await this.#nano.db.create(this.#storeName)
     } else {
       try {
-        await this._nano.db.create(this._storeName)
+        await this.#nano.db.create(this.#storeName)
       } catch (err) {
         if (err.error !== 'file_exists') throw err
       }
     }
 
     try {
-      const stats = await this._db.get(STATS_KEY_NAME)
+      const stats = await this.#db.get(STATS_KEY_NAME)
 
-      this._statsRevId = stats['_rev']
+      this.#statsRevId = stats['_rev']
     } catch (err) {
       if (err.error !== 'not_found') throw err
     }
@@ -64,9 +72,9 @@ class CouchWriter {
 
     const docs = data
       .filter(filterEntry)
-      .map(prepareEntry)
+      .map(entry => ({ ...entry, _id: entry['id'] }))
 
-    await this._db.bulk({ docs: docs })
+    await this.#db.bulk({ docs: docs })
 
     return docs.length
   }
@@ -80,30 +88,25 @@ class CouchWriter {
   async updateStats(stats) {
     console.debug(`[${TAG}] Updating status`)
 
-    const data = Object.assign({}, stats, {
+    const data = {
+      ...stats,
       _id: STATS_KEY_NAME,
-      _rev: this._statsRevId,
-    })
+      _rev: this.#statsRevId,
+    }
 
-    const res = await this._db.insert(data)
+    const res = await this.#db.insert(data)
 
-    this._statsRevId = res['rev']
+    this.#statsRevId = res['rev']
   }
 }
 
 function filterEntry(entry) {
-  if (!entry || entry.id === undefined) {
-    console.warn(`[${TAG}] Missing entry id, skipping save`, entry)
-    return false
+  if (entry?.id !== undefined) {
+    return true
   }
 
-  return true
-}
-
-function prepareEntry(entry) {
-  return Object.assign({}, entry, {
-    _id: entry['id'],
-  })
+  console.warn(`[${TAG}] Missing entry id, skipping save`, entry)
+  return false
 }
 
 module.exports = CouchWriter

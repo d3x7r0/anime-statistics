@@ -13,6 +13,19 @@ const deleteFile = promisify(fs.unlink)
 const appendFile = promisify(fs.appendFile)
 
 class CSVWriter {
+  #outFile = null
+  #statsFile = null
+
+  #columns = []
+
+  #separator = DEFAULT_SEPARATOR
+  #lineSeparator = DEFAULT_LINE_SEPARATOR
+  #arraySeparator = DEFAULT_ARRAY_SEPARATOR
+
+  #deleteOnStart = DEFAULT_DELETE_FILE
+
+  #warned = false
+
   constructor({
     outFile,
     statsFile,
@@ -31,42 +44,40 @@ class CSVWriter {
       throw new Error(`[${TAG}] Missing stats file`)
     }
 
-    this._outFile = outFile
-    this._statsFile = statsFile
+    this.#outFile = outFile
+    this.#statsFile = statsFile
 
-    this._columns = [
+    this.#columns = [
       {prop: "id"},
       ...(columns || [])
     ]
 
-    this._separator = separator
-    this._lineSeparator = lineSeparator
-    this._arraySeparator = arraySeparator
+    this.#separator = separator
+    this.#lineSeparator = lineSeparator
+    this.#arraySeparator = arraySeparator
 
-    this._warned = false
-
-    this._deleteOnStart = deleteOnStart
+    this.#deleteOnStart = deleteOnStart
   }
 
   async prepare() {
-    console.info(`[${TAG}] Preparing output file "${this._outFile}"`)
+    console.info(`[${TAG}] Preparing output file "${this.#outFile}"`)
 
-    this._warned = false
+    this.#warned = false
 
-    if (this._deleteOnStart) {
-      await deleteFile(this._outFile)
+    if (this.#deleteOnStart) {
+      await deleteFile(this.#outFile)
     }
 
-    return await this._writeHeader()
+    return await this.#writeHeader()
   }
 
   async save(data) {
     console.info(`[${TAG}] Writing ${data.length} lines to file`)
 
-    const res = data.map(this._printCSVLine.bind(this)).join(this._lineSeparator)
+    const res = data.map(this.#printCSVLine.bind(this)).join(this.#lineSeparator)
 
     if (res.length) {
-      await appendFile(this._outFile, res + this._lineSeparator)
+      await appendFile(this.#outFile, res + this.#lineSeparator)
     }
 
     return res.length
@@ -75,45 +86,47 @@ class CSVWriter {
   async finish(stats) {
     const keys = Object.keys(stats)
 
-    let res = keys.join(this._separator)
-    res += this._lineSeparator + " "
+    let res = keys.join(this.#separator)
+    res += this.#lineSeparator + " "
     res += keys
       .map((k) => stats[k])
-      .join(this._separator)
+      .join(this.#separator)
 
-    return await this._writeStatsFile(res)
+    return await this.#writeStatsFile(res)
   }
 
-  _writeHeader() {
-    const headers = this._columns.map(entry => entry.title || entry.prop)
+  #writeHeader() {
+    const headers = this.#columns.map(entry => entry.title || entry.prop)
 
-    return appendFile(this._outFile, headers.join(this._separator) + this._lineSeparator)
+    return appendFile(this.#outFile, headers.join(this.#separator) + this.#lineSeparator)
   }
 
-  _printCSVLine(entry) {
-    return this._columns
+  #printCSVLine(entry) {
+    return this.#columns
       .map(entry => entry.prop)
       .map(
         prop => Array.isArray(entry[prop]) ?
-          entry[prop].join(this._arraySeparator) :
+          entry[prop].join(this.#arraySeparator) :
           entry[prop] || "--"
       )
-      .join(this._separator)
+      .join(this.#separator)
   }
 
   updateStats() {
-    if (!this._warned) {
-      this._warned = true
-      console.warn(`[${TAG}] CVS writer doesn't support stats updates. All stats will be writen at the end`)
+    if (this.#warned) {
+      return
     }
+
+    this.#warned = true
+    console.warn(`[${TAG}] CVS writer doesn't support stats updates. All stats will be writen at the end`)
   }
 
-  async _writeStatsFile(data) {
-    if (this._deleteOnStart) {
-      await deleteFile(this._statsFile)
+  async #writeStatsFile(data) {
+    if (this.#deleteOnStart) {
+      await deleteFile(this.#statsFile)
     }
 
-    return await appendFile(this._statsFile, data)
+    return await appendFile(this.#statsFile, data)
   }
 }
 

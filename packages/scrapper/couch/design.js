@@ -83,6 +83,44 @@ module.exports = {
       reduce: '_count',
     },
   },
+  studios: {
+    all: {
+      map: function (doc) {
+        if (!doc['year']) {
+          return
+        }
+
+        doc['Studio'].forEach(function (entry) {
+          emit(entry.toLowerCase(), doc)
+        })
+      },
+      reduce: '_count',
+    },
+    byKey: {
+      map: function (doc) {
+        if (!doc['year']) {
+          return
+        }
+
+        doc['Studio'].forEach(function (entry) {
+          emit([entry.toLowerCase(), doc['year']], 1)
+        })
+      },
+      reduce: '_count',
+    },
+    byYear: {
+      map: function (doc) {
+        if (!doc['year']) {
+          return
+        }
+
+        doc['Studio'].forEach(function (entry) {
+          emit([doc['year'], entry.toLowerCase()], 1)
+        })
+      },
+      reduce: '_count',
+    },
+  },
   genres: {
     all: {
       map: function (doc) {
