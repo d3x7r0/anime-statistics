@@ -229,14 +229,15 @@ function guessRuntime(res) {
   if (!runtime && res['type']) {
     const type = (res['type'] || '').toLowerCase()
 
+    // TODO: find proper values
     if (type === 'tv') {
-      runtime = 25
+      runtime = 24
     } else if (type === 'ona') {
-      runtime = 15
+      runtime = 22
     } else if (type === 'ova' || type === 'oav') {
-      runtime = 30
+      runtime = 40
     } else if (type === 'movie') {
-      runtime = 60
+      runtime = 90
     }
   }
 
@@ -373,7 +374,7 @@ function buildId(entry) {
 function isValidEntry(entry) {
   const hasYear = !!entry['year']
   const hasGenres = entry['Genres'].length > 0
-  const hasThemes = entry['Themes'] > 0
+  const hasThemes = entry['Themes'].length > 0
 
   return hasYear && (hasGenres || hasThemes)
 }
