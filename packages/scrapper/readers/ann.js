@@ -50,8 +50,7 @@ class ANNReader {
   }
 
   hasNext() {
-    //return this.#continue
-    return this.#page <= 25
+    return this.#continue
   }
 
   finish() {
