@@ -25,6 +25,16 @@ function SiteHeader() {
             {TITLES.TYPES}
           </a>
         </li>
+        <li className="pure-menu-item">
+          <a href={PATHS.SOURCES} className="pure-menu-link">
+            {TITLES.SOURCES}
+          </a>
+        </li>
+        <li className="pure-menu-item">
+          <a href={PATHS.STUDIOS} className="pure-menu-link">
+            {TITLES.STUDIOS}
+          </a>
+        </li>
       </ul>
     </header>
   )

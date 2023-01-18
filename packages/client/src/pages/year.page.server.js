@@ -1,7 +1,6 @@
-import { h } from 'preact'
-
 import { getEpisodeTotals, getTotals } from '../js/data/totals'
-import { fetchDataGenres, fetchDataThemes, fetchTypes } from '../js/data/db/couch'
+import { getTypeData } from '../js/data/types'
+import { getGenreYearData, getThemesYearData } from '../js/data/categories'
 
 export async function onBeforeRender() {
   const [
@@ -13,9 +12,9 @@ export async function onBeforeRender() {
   ] = await Promise.all([
     getTotals(),
     getEpisodeTotals(),
-    fetchTypes(),
-    fetchDataGenres(),
-    fetchDataThemes(),
+    getTypeData(),
+    getGenreYearData(),
+    getThemesYearData(),
   ])
 
   return {

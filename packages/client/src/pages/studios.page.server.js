@@ -1,22 +1,19 @@
-import { h } from 'preact'
-
-import { getTotals } from '../js/data/totals'
-import { getTypeData } from '../js/data/types'
+import { getEpisodeTotals, getStudioTotals } from '../js/data/studios'
 
 export async function onBeforeRender() {
   const [
     totals,
-    types,
+    episodeTotals,
   ] = await Promise.all([
-    getTotals(),
-    getTypeData(),
+    getStudioTotals(),
+    getEpisodeTotals()
   ])
 
   return {
     pageContext: {
       pageProps: {
         totals,
-        types,
+        episodeTotals,
       },
     },
   }

@@ -1,7 +1,7 @@
 import { getEpisodeTotals, getTotals } from '../js/data/totals'
 import { getGenreData, getThemeData } from '../js/data/categories'
-import { fetchData } from '../js/data/db/couch'
 import { getTVEpisodeData } from '../js/data/averages'
+import { getAggregatedData } from '../js/data/aggregated'
 
 export async function onBeforeRender () {
   const [
@@ -16,7 +16,7 @@ export async function onBeforeRender () {
     getEpisodeTotals(),
     getGenreData(),
     getThemeData(),
-    fetchData(),
+    getAggregatedData(),
     getTVEpisodeData(),
   ])
 

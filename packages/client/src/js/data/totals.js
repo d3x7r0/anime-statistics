@@ -1,7 +1,10 @@
-import { fetchEpisodeTotals, fetchTotals } from './db/couch'
+import { END_YEAR, START_YEAR } from '../config'
+
+import { fetchArrayRange, fetchDB } from './db/couch'
 
 export async function getTotals() {
-  const data = await fetchTotals()
+  // curl "https://couchdb/ann/_design/aggregated/_view/all?group=true"
+  const data = await fetchDB('aggregated', 'all', START_YEAR, END_YEAR)
 
   return data.reduce((memo, entry) => ({
     ...memo,
@@ -10,7 +13,8 @@ export async function getTotals() {
 }
 
 export async function getEpisodeTotals() {
-  const data = await fetchEpisodeTotals()
+  // curl "https://couchdb/ann/_design/aggregated/_view/episodesByType?group=true"
+  const data = await fetchArrayRange('aggregated', 'episodesByType', START_YEAR, END_YEAR)
 
   return data
     .filter(entry => entry.key[1] === 'tv')

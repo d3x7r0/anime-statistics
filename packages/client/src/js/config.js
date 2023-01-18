@@ -16,6 +16,8 @@ export const TITLES = {
   GENRE: 'Genre',
   YEAR: 'Year',
   TYPES: 'Types',
+  SOURCES: 'Sources',
+  STUDIOS: 'Studios',
 }
 
 const BASE_URL = (import.meta.env.VITE_BASE_URL || '').replace(/\/$/, "")
@@ -24,6 +26,8 @@ export const PATHS = {
   GENRE: cleanURL('/'),
   YEAR: cleanURL('/year'),
   TYPES: cleanURL('/types'),
+  SOURCES: cleanURL('/sources'),
+  STUDIOS: cleanURL('/studios'),
 }
 
 function cleanURL(url = '') {
