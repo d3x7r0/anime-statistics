@@ -22,10 +22,10 @@ module.exports = {
 
         if (doc['sources'] && doc['sources'].length) {
           doc['sources'].forEach(function (source) {
-            emit([doc['year'], source.toLowerCase()], 1)
+            emit([doc['year'], source.type], 1)
           })
         } else {
-          emit([doc['year'], 'original'], 1)
+          emit([doc['year'], doc['adaptation'] ? 'adaptation' : 'original'], 1)
         }
       },
       reduce: '_count',
@@ -39,7 +39,7 @@ module.exports = {
         }
 
         doc['Studio'].forEach(function (studio) {
-          emit(studio.toLowerCase(), 1)
+          emit(studio.name, 1)
         })
       },
       reduce: '_count',
@@ -51,7 +51,7 @@ module.exports = {
         }
 
         doc['Studio'].forEach(function (studio) {
-          emit([doc['year'], studio.toLowerCase()], 1)
+          emit([doc['year'], studio.name], 1)
         })
       },
       reduce: '_count',
@@ -63,7 +63,7 @@ module.exports = {
         }
 
         doc['Studio'].forEach(function (studio) {
-          emit([studio.toLowerCase(), doc['type'].toLowerCase(), doc['year']], 1)
+          emit([studio.name, doc['type'].toLowerCase(), doc['year']], 1)
         })
       },
       reduce: '_count',
@@ -77,10 +77,10 @@ module.exports = {
         doc['Studio'].forEach(function (studio) {
           if (doc['sources'] && doc['sources'].length) {
             doc['sources'].forEach(function (source) {
-              emit([studio.toLowerCase(), source.toLowerCase(), doc['year']], 1)
+              emit([studio.name, source.type, doc['year']], 1)
             })
           } else {
-            emit([studio.toLowerCase(), 'original', doc['year']], 1)
+            emit([studio.name, doc['adaptation'] ? 'adaptation' : 'original', doc['year']], 1)
           }
         })
       },
@@ -92,9 +92,9 @@ module.exports = {
           return
         }
 
-        doc['Genres'].forEach(function (genre) {
-          doc['Studio'].forEach(function (studio) {
-            emit([studio.toLowerCase(), genre.toLowerCase(), doc['year']], 1)
+        doc['Studio'].forEach(function (studio) {
+          doc['Genres'].forEach(function (genre) {
+            emit([studio.name, genre.toLowerCase(), doc['year']], 1)
           })
         })
       },
@@ -106,9 +106,9 @@ module.exports = {
           return
         }
 
-        doc['Themes'].forEach(function (theme) {
-          doc['Studio'].forEach(function (studio) {
-            emit([studio.toLowerCase(), theme.toLowerCase(), doc['year']], 1)
+        doc['Studio'].forEach(function (studio) {
+          doc['Themes'].forEach(function (theme) {
+            emit([studio.name, theme.toLowerCase(), doc['year']], 1)
           })
         })
       },
@@ -121,7 +121,7 @@ module.exports = {
         }
 
         doc['Studio'].forEach(function (studio) {
-          emit([studio.toLowerCase(), doc['type'].toLowerCase(), doc['year']], doc['Episodes'])
+          emit([studio.name, doc['type'].toLowerCase(), doc['year']], doc['Episodes'])
         })
       },
       'reduce': '_stats',
@@ -249,4 +249,16 @@ module.exports = {
       'reduce': '_stats',
     },
   },
+  debug: {
+    relations: {
+      map: function (doc) {
+        if (doc['related-prev']) {
+          doc['related-prev'].forEach(function (rel) {
+            return emit(rel, doc)
+          })
+        }
+      },
+      'reduce': '_count',
+    }
+  }
 }

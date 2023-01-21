@@ -32,7 +32,7 @@ export default function Studio(props) {
     const entry = studioTotals?.tv
 
     if (!entry?.count) {
-      return 0
+      return 'No Data'
     }
 
     return Math.round(entry.sum / entry.count)

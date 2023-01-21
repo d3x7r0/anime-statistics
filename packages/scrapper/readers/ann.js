@@ -30,7 +30,10 @@ class ANNReader {
   #page = START_PAGE
   #continue = false
 
-  constructor({ startPage = START_PAGE, headers } = {}) {
+  constructor({
+    startPage = START_PAGE,
+    headers,
+  } = {}) {
     this.#startPage = startPage
     this.#headers = headers || {}
   }
@@ -135,6 +138,7 @@ async function processData(entries) {
   )
 
   data = await processRelations(data)
+  data = await processStudios(data)
 
   return data
     .map(multiplyEntries)
@@ -169,7 +173,10 @@ async function doGet(url, options, count) {
 
   console.info(
     `[${TAG}] Delaying request by ${delay}ms due to error (attempt ${attempt})`,
-    { status: res.status, statusText: res.statusText }
+    {
+      status: res.status,
+      statusText: res.statusText,
+    },
   )
 
   await Utils.delay(delay)()
@@ -211,15 +218,16 @@ function processEntry(data) {
 
   if (data['related-prev']) {
     const relations = compact(
-      data['related-prev'].map(entry => entry?.['$']?.['rel']?.toLowerCase())
+      data['related-prev'].map(entry => entry?.['$']?.['rel']?.toLowerCase()),
     )
 
-    res['sequel'] = contains(relations, item => item.indexOf('sequel') !== -1)
     res['adaptation'] = contains(relations, item => item.indexOf('adapted') !== -1)
-    res['spinOff'] = contains(relations, item => item.indexOf('spinoff') !== -1)
-    res['compilation'] = contains(relations, item => item.indexOf('compilation') !== -1)
-    res['sideStory'] = contains(relations, item => item.indexOf('side story') !== -1)
+    res['compilation'] = contains(relations, item => item.indexOf('compilation') !== -1 || item.indexOf('remixed') !== -1)
+    res['prequel'] = contains(relations, item => item.indexOf('prequel') !== -1)
     res['remake'] = contains(relations, item => item.indexOf('remake') !== -1 || item.indexOf('alternate retelling') !== -1)
+    res['sequel'] = contains(relations, item => item.indexOf('sequel') !== -1)
+    res['sideStory'] = contains(relations, item => item.indexOf('side story') !== -1)
+    res['spinoff'] = contains(relations, item => item.indexOf('spinoff') !== -1)
 
     // store to check if we missed something after a full run
     res['related-prev'] = data['related-prev'].map(entry => entry['$']?.['rel'])
@@ -229,14 +237,12 @@ function processEntry(data) {
     res['sources'] = data['related-prev']
       .map(entry => entry['$'])
       .filter(entry => entry?.rel?.indexOf('adapted') !== -1)
-      .map(entry => entry.id)
   }
 
   res['Studio'] = compact(
     data['credit']
       ?.filter(entry => entry?.task?.includes('Animation Production'))
-      ?.flatMap(entry => entry?.company)
-      ?.map(d => d['_'])
+      ?.flatMap(entry => entry?.company),
   )
 
   return res
@@ -281,8 +287,13 @@ async function processRelations(entries) {
   const ids = Array.from(
     entries
       .flatMap(entry => entry.sources || [])
-      .reduce((memo, entry) => memo.add(entry), new Set())
-      .values()
+      .reduce((memo, entry) => {
+        if (entry?.id) {
+          memo.add(entry.id)
+        }
+        return memo
+      }, new Set())
+      .values(),
   )
 
   if (ids.length === 0) {
@@ -300,7 +311,7 @@ async function processRelations(entries) {
       fetchEntries(sub).then(
         // We need to filter entries because sometimes an id is non-existing
         // despite the fact that it's listed as related
-        data =>  compact(
+        data => compact(
           data.map(entry => entry?.['$']),
         ),
         err => {
@@ -317,14 +328,45 @@ async function processRelations(entries) {
     .flatMap(entry => entry || [])
     .reduce((memo, data) => {
       if (data) {
-        memo.set(data['id'], data['type'] || data['precision'])
+        memo.set(data['id'], {
+          id: data['id'],
+          type: (data['type'] || data['precision'] || 'unknown').toLowerCase(),
+          name: data['name'],
+        })
       }
       return memo
     }, new Map())
 
   for (const entry of entries) {
     entry.sources = compact(
-      entry.sources?.map(source => sourceMap.get(source) || 'unknown')
+      entry.sources?.map(source => sourceMap.get(source))
+    )
+  }
+
+  return entries
+}
+
+// Studios can have their name written in many different formats and with different ids.
+// We keep a map of slugified studios so we can use a correct the data
+// TODO: make sure this doesn't run out of memory
+// TODO: make this a class property so it can be cleared between runs
+const StudioMap = new Map()
+
+function processStudios(entries) {
+  for (const res of entries) {
+    res['Studio'] = compact(
+      res['Studio']?.map(d => {
+        const name = d['_']
+        const id = d['$']?.['id']
+        // Cleanup all accented characters, spaces, hyphens and underscores
+        const slug = slugify(name.normalize('NFD').replace(/[\u0300-\u036f\W_]/g, ''))
+
+        if (!StudioMap.has(slug)) {
+          StudioMap.set(slug, { id, name })
+        }
+
+        return StudioMap.get(slug)
+      }),
     )
   }
 
@@ -391,10 +433,9 @@ function buildId(entry) {
 
 function isValidEntry(entry) {
   const hasYear = !!entry['year']
-  const hasGenres = entry['Genres'].length > 0
-  const hasThemes = entry['Themes'].length > 0
+  const hasType = !!entry['type']
 
-  return hasYear && (hasGenres || hasThemes)
+  return hasYear && hasType
 }
 
 function contains(arr, fn, ctx) {
@@ -414,7 +455,7 @@ function getXMLValue(data, value) {
   return compact(
     data
       .filter(i => i['$']['type'] === value)
-      .map(d => d['_'])
+      .map(d => d['_']),
   )
 }
 
